@@ -1,0 +1,8 @@
+# Fallback parameters for emergency mode (conservative baseline)
+min_score: 1.0
+rsi_oversold: 30
+rsi_overbought: 70
+stop_multiplier: 2.0
+target_multiplier: 2.0
+risk_pct: 1.0
+

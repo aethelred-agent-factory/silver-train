@@ -1,0 +1,14 @@
+pydantic
+pyarrow
+sqlalchemy
+ccxt
+pyyaml
+numpy
+pandas
+scipy
+requests
+python-dotenv
+fastapi
+uvicorn
+prometheus-client
+boto3openai

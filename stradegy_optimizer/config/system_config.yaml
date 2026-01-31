@@ -1,0 +1,42 @@
+# System-wide settings
+data_sources:
+  default_exchange: 'phemex'
+  leader_asset: 'BTC'  # Leader asset for correlation calculations
+  follower_assets:     # Assets to optimize
+    - 'ETH'
+    - 'SOL'
+    - 'AVAX'
+
+paths:
+  market_data: 'data/market/'
+  artifacts: 'data/artifacts/'
+  state_db: 'data/state/optimizer_state.db'
+  logs: 'logs/'
+
+thresholds:
+  max_drawdown_pct: 20.0
+  t1_data_gap_threshold: 0.1 # 10%
+  minimum_trade_history_days: 90  # Minimum days of data before optimization
+
+api:
+  ccxt:
+    rate_limit: 2000 # ms
+    candle_timeframe: '1h'  # 1-hour candles per spec
+    max_retries: 3
+    retry_delay_ms: 500
+  deepseek:
+    timeout: 60 # seconds
+    model: 'deepseek-coder'
+    temperature: 0.5
+    max_tokens: 1000
+
+monitoring:
+  dashboard_port: 5000
+  health_check_interval: 60 # seconds
+  log_level: 'INFO'
+
+optimization:
+  min_iterations_before_freeze: 3    # Must run at least N iterations before allowing freeze
+  learning_mode_enabled: true         # Track and learn from tested parameters
+  credit_assignment_enabled: true     # Enable drawdown attribution analysis (spec 3.2.1)
+  audit_all_proposals: true          # Run audit on all proposals before execution

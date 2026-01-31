@@ -1,0 +1,2 @@
+total_windows,profitable_windows,profitable_pct,median_profit,mean_profit,min_profit,max_profit,profit_std,median_win_rate,mean_win_rate,worst_drawdown,median_drawdown,mean_drawdown,median_trades,mean_trades,median_sharpe
+5,2,40.0,0.0,0.11209145898587303,0.0,0.28022864746468257,0.15348755147556953,0.0,26.666666666666664,-0.4839364875715322,0.0,-0.19357459502861288,0.0,1.2,0.0

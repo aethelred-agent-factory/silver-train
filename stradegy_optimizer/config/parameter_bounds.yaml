@@ -1,0 +1,31 @@
+# Min/max ranges for all strategy parameters (from spec)
+min_score:
+  min: 1.0
+  max: 5.0
+  description: "Entry threshold score"
+
+rsi_oversold:
+  min: 20
+  max: 40
+  description: "RSI level for long entry"
+
+rsi_overbought:
+  min: 60
+  max: 80
+  description: "RSI level for short entry"
+
+stop_multiplier:
+  min: 1.0
+  max: 3.0
+  description: "ATR multiplier for stop loss"
+
+target_multiplier:
+  min: 1.0
+  max: 3.0
+  description: "Risk/Reward ratio"
+
+risk_pct:
+  min: 0.25
+  max: 5.0
+  description: "Capital risk per trade (%)"
+

@@ -1,0 +1,53 @@
+# Stability Guards Configuration (Spec 3.3.1)
+# Implements freeze, rollback, and learning memory guards
+
+stability_guards:
+  # Freeze Logic (Spec 3.3.1)
+  # "If configuration achieves profit > 5% and drawdown decreases for 3 consecutive iterations,
+  # parameters must be frozen for N iterations (default: 5)"
+  freeze_profit_threshold: 5.0          # Profit threshold % for freeze eligibility
+  consecutive_improving_for_freeze: 3   # Number of consecutive improving iterations before freeze
+  freeze_duration: 5                    # Number of iterations to keep parameters frozen
+  
+  # Rollback Logic (Spec 3.3.1)
+  # "If drawdown increases by more than 15% in a single iteration,
+  # the system must revert to the last known stable configuration"
+  rollback_drawdown_spike: 15.0         # Drawdown increase % that triggers rollback
+  
+  # Fallback Logic (Spec 3.3.1)
+  # "If the AI API fails, the system must apply deterministic heuristic adjustments"
+  fallback_heuristic_enabled: true
+  
+  # Learning Memory & Blacklist (Spec 3.3.1)
+  # "Blacklisted parameter sets that caused drawdown > 40%"
+  blacklist_drawdown_threshold: 40.0    # Drawdown % that triggers blacklisting
+  
+  # Memory tracking
+  max_memory_size: 1000                 # Maximum parameter sets to remember
+  memory_persistence_enabled: true      # Save memory to disk
+
+# Optimization Targets (Spec 4.2)
+# "Optimization is considered successful when achieved per regime and maintained over time"
+optimization_targets:
+  # Global targets
+  min_profit_pct: 10.0                  # Profit > 10%
+  min_win_rate_pct: 40.0               # Win Rate > 40%
+  max_drawdown_pct: 20.0               # Max Drawdown < 20%
+  min_stability_iterations: 10          # Maintain stability for 10+ consecutive iterations
+  
+  # Per-regime tolerance (can have different targets per regime)
+  per_regime_adjustments:
+    TREND:
+      min_profit_pct: 8.0               # Slightly easier in trending markets
+      min_win_rate_pct: 38.0
+      max_drawdown_pct: 22.0
+    
+    RANGE:
+      min_profit_pct: 12.0              # Harder in ranging (less predictable)
+      min_win_rate_pct: 42.0
+      max_drawdown_pct: 18.0
+    
+    HIGH_VOL:
+      min_profit_pct: 6.0               # Easier in high vol (more opportunities)
+      min_win_rate_pct: 35.0
+      max_drawdown_pct: 25.0

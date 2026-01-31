@@ -1,0 +1,8 @@
+# Regime classification thresholds
+adx_thresholds:
+  trending: 25
+  ranging: 20
+
+atr_percentile_thresholds:
+  high_volatility: 0.85
+  low_volatility: 0.15

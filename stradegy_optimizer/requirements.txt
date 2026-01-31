@@ -1,0 +1,14 @@
+pydantic # Pydantic v2+ required for model_dump() and model_validate_json()
+pyarrow
+sqlalchemy
+ccxt
+pyyaml
+numpy
+pandas
+scipy
+requests
+python-dotenv
+fastapi
+uvicorn
+prometheus-client
+boto3openai

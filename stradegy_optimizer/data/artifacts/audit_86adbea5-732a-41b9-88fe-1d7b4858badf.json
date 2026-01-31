@@ -1,0 +1,29 @@
+{
+    "audit_id": "86adbea5-732a-41b9-88fe-1d7b4858badf",
+    "proposal_id": "ed18efaa-9050-4935-aa26-61a1007fe446",
+    "timestamp": "2026-01-31T06:18:19.217928Z",
+    "tiered_findings": [
+        {
+            "tier": "T2",
+            "code": "T2_CausalGap",
+            "explanation": "Proposal is missing a causal chain.",
+            "impact": null,
+            "remediation": null
+        },
+        {
+            "tier": "T3",
+            "code": "T3_ConfigGap",
+            "explanation": "Missing 'liquidity_thresholds' in system_config.yaml.",
+            "impact": null,
+            "remediation": null
+        }
+    ],
+    "action": {
+        "type": "ALLOW_WITH_RESTRICTION",
+        "restrictions": {
+            "reason": "T2 flags: T2_CausalGap"
+        }
+    },
+    "artifact_refs": [],
+    "checksum": ""
+}

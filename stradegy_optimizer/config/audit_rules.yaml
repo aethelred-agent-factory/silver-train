@@ -1,0 +1,38 @@
+# T1/T2/T3 rule definitions
+T1:
+  - rule: "Regime == 'RANGE' and ATR_percentile_90 > 0.90"
+    name: "T1_Contradiction"
+    description: "Contradiction between market regime and volatility."
+    action: "trigger_emergency_protocol"
+  - rule: "parameter_outside_bounds"
+    name: "T1_BoundsViolation"
+    description: "A strategy parameter is outside of its declared safety bounds."
+    action: "revert_to_safe_baseline"
+  - rule: "missing_candles_pct > 0.10"
+    name: "T1_DataGap"
+    description: "More than 10% of required historical data is missing."
+    action: "exclude_asset"
+  - rule: "proposal_version > 100"
+    name: "T1_Circularity"
+    description: "Proposal version indicates potential circular reoptimization."
+    action: "freeze_optimizer"
+
+T2:
+  - rule: "n_trades < 100"
+    name: "T2_InsufficientSample"
+    description: "Strategy acceptance is based on a small number of trades."
+    action: "degrade_confidence"
+  - rule: "abs(ADX - effective_threshold) / effective_threshold < 0.08"
+    name: "T2_FuzzyBoundary"
+    description: "Regime classification is ambiguous (close to a threshold)."
+    action: "lower_confidence_score"
+
+T3:
+  - rule: "missing_liquidity_thresholds"
+    name: "T3_ConfigGap"
+    description: "Configuration for liquidity thresholds is not defined."
+    action: "request_remediation"
+  - rule: "ambiguous_log_message"
+    name: "T3_Ambiguity"
+    description: "Log messages contain vague terms that hinder auditability."
+    action: "annotate_log_for_review"

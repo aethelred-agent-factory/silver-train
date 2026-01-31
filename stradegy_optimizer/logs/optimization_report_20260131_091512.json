@@ -1,0 +1,217 @@
+{
+  "timestamp": "20260131_091512",
+  "total_iterations": 10,
+  "optimization_history": [
+    {
+      "iteration": 1,
+      "timestamp": "2026-01-31T09:13:02.183070",
+      "metrics": {
+        "profit": 2.252236566852048,
+        "max_drawdown_pct": -5.728177800134682,
+        "win_rate": 50.0,
+        "sharpe_ratio": 0.4370575470369506,
+        "total_trades": 64,
+        "profit_factor": 1.0225223656685205,
+        "parameters": {
+          "min_score": 1.0,
+          "rsi_oversold": 30,
+          "rsi_overbought": 70,
+          "stop_multiplier": 2.0,
+          "target_multiplier": 2.0,
+          "risk_pct": 1.0
+        },
+        "regime_confidence": 0.85
+      }
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2026-01-31T09:13:16.419092",
+      "metrics": {
+        "profit": 23.201025396527086,
+        "max_drawdown_pct": -0.9029077230023722,
+        "win_rate": 50.0,
+        "sharpe_ratio": 1.2012057955387192,
+        "total_trades": 4,
+        "profit_factor": 1.2320102539652709,
+        "parameters": {
+          "min_score": 1.0,
+          "rsi_oversold": 30,
+          "rsi_overbought": 70,
+          "stop_multiplier": 2.0,
+          "target_multiplier": 2.0,
+          "risk_pct": 1.9500000000000002
+        },
+        "regime_confidence": 0.85
+      }
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2026-01-31T09:13:31.073948",
+      "metrics": {
+        "profit": 67.32891406953522,
+        "max_drawdown_pct": -0.7225618222834126,
+        "win_rate": 100.0,
+        "sharpe_ratio": 2.038069898027871,
+        "total_trades": 1,
+        "profit_factor": 1.6732891406953523,
+        "parameters": {
+          "min_score": 1.0,
+          "rsi_oversold": 30,
+          "rsi_overbought": 70,
+          "stop_multiplier": 2.0,
+          "target_multiplier": 2.0,
+          "risk_pct": 2.6625
+        },
+        "regime_confidence": 0.85
+      }
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2026-01-31T09:13:44.757412",
+      "metrics": {
+        "profit": 67.32891406953522,
+        "max_drawdown_pct": -0.7225618222834126,
+        "win_rate": 100.0,
+        "sharpe_ratio": 2.038069898027871,
+        "total_trades": 1,
+        "profit_factor": 1.6732891406953523,
+        "parameters": {
+          "min_score": 1.0,
+          "rsi_oversold": 32.0,
+          "rsi_overbought": 70,
+          "stop_multiplier": 2.0,
+          "target_multiplier": 2.0,
+          "risk_pct": 2.6625
+        },
+        "regime_confidence": 0.85
+      }
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2026-01-31T09:13:58.494007",
+      "metrics": {
+        "profit": 67.32891406953522,
+        "max_drawdown_pct": -0.7225618222834126,
+        "win_rate": 100.0,
+        "sharpe_ratio": 2.038069898027871,
+        "total_trades": 1,
+        "profit_factor": 1.6732891406953523,
+        "parameters": {
+          "min_score": 1.0,
+          "rsi_oversold": 34.0,
+          "rsi_overbought": 70,
+          "stop_multiplier": 2.0,
+          "target_multiplier": 2.0,
+          "risk_pct": 2.6625
+        },
+        "regime_confidence": 0.85
+      }
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2026-01-31T09:14:12.450696",
+      "metrics": {
+        "profit": 123.43832009333116,
+        "max_drawdown_pct": -0.7225618222834126,
+        "win_rate": 100.0,
+        "sharpe_ratio": 2.9538390245385155,
+        "total_trades": 1,
+        "profit_factor": 2.2343832009333116,
+        "parameters": {
+          "min_score": 1.0,
+          "rsi_oversold": 34.0,
+          "rsi_overbought": 74.0,
+          "stop_multiplier": 2.0,
+          "target_multiplier": 2.0,
+          "risk_pct": 2.6625
+        },
+        "regime_confidence": 0.85
+      }
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2026-01-31T09:14:27.139693",
+      "metrics": {
+        "profit": 138.03983465224272,
+        "max_drawdown_pct": -0.7225618222834126,
+        "win_rate": 100.0,
+        "sharpe_ratio": 3.270984817122392,
+        "total_trades": 1,
+        "profit_factor": 2.380398346522427,
+        "parameters": {
+          "min_score": 1.0,
+          "rsi_oversold": 36.0,
+          "rsi_overbought": 74.0,
+          "stop_multiplier": 2.0,
+          "target_multiplier": 2.0,
+          "risk_pct": 2.6625
+        },
+        "regime_confidence": 0.85
+      }
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2026-01-31T09:14:39.980669",
+      "metrics": {
+        "profit": 138.03983465224272,
+        "max_drawdown_pct": -0.7225618222834126,
+        "win_rate": 100.0,
+        "sharpe_ratio": 3.270984817122392,
+        "total_trades": 1,
+        "profit_factor": 2.380398346522427,
+        "parameters": {
+          "min_score": 1.0,
+          "rsi_oversold": 38.0,
+          "rsi_overbought": 74.0,
+          "stop_multiplier": 2.0,
+          "target_multiplier": 2.0,
+          "risk_pct": 2.6625
+        },
+        "regime_confidence": 0.85
+      }
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2026-01-31T09:14:53.671177",
+      "metrics": {
+        "profit": 138.03983465224272,
+        "max_drawdown_pct": -0.7225618222834126,
+        "win_rate": 100.0,
+        "sharpe_ratio": 3.270984817122392,
+        "total_trades": 1,
+        "profit_factor": 2.380398346522427,
+        "parameters": {
+          "min_score": 1.0,
+          "rsi_oversold": 40,
+          "rsi_overbought": 74.0,
+          "stop_multiplier": 2.0,
+          "target_multiplier": 2.0,
+          "risk_pct": 2.6625
+        },
+        "regime_confidence": 0.85
+      }
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2026-01-31T09:15:07.137410",
+      "metrics": {
+        "profit": 138.03983465224272,
+        "max_drawdown_pct": -0.7225618222834126,
+        "win_rate": 100.0,
+        "sharpe_ratio": 3.270984817122392,
+        "total_trades": 1,
+        "profit_factor": 2.380398346522427,
+        "parameters": {
+          "min_score": 1.0,
+          "rsi_oversold": 38.0,
+          "rsi_overbought": 74.0,
+          "stop_multiplier": 2.0,
+          "target_multiplier": 2.0,
+          "risk_pct": 2.6625
+        },
+        "regime_confidence": 0.85
+      }
+    }
+  ],
+  "summary": "OPTIMIZATION RESULTS SUMMARY\n\nCompleted 10 iterations of strategy parameter optimization.\n\nPerformance Trajectory:\n- Initial Profit: 2.25%\n- Final Profit: 138.04%\n- Best Profit: 138.04%\n- Profit Improvement: +135.79%\n- Best Improvement: +135.79%\n\nProfit Progression: 2.25% \u2192 23.20% \u2192 67.33% \u2192 67.33% \u2192 67.33% \u2192 123.44% \u2192 138.04% \u2192 138.04% \u2192 138.04% \u2192 138.04%\n\nFinal Metrics:\n- Win Rate: 100.00%\n- Max Drawdown: -0.72%\n- Total Trades: 1\n- Sharpe Ratio: 3.27\n\nBest Parameters Found:\n{\n  \"min_score\": 1.0,\n  \"rsi_oversold\": 36.0,\n  \"rsi_overbought\": 74.0,\n  \"stop_multiplier\": 2.0,\n  \"target_multiplier\": 2.0,\n  \"risk_pct\": 2.6625\n}\n\nRecommendations:\n- Target profit of 25% is ambitious; current best achieved 138.04%\n- Consider extending iterations or adjusting parameter bounds for more exploration\n- Stable performance achieved with 1 trades\n"
+}

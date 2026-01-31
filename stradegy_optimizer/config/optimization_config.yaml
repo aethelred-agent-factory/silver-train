@@ -1,0 +1,32 @@
+# Stability Guard Configuration
+stability:
+  # Freeze configuration
+  freeze_profit_threshold: 5.0              # Profit % to trigger freeze consideration
+  freeze_consecutive_iterations: 3          # Consecutive improving iterations before freeze
+  freeze_duration: 5                        # Number of iterations to freeze
+
+  # Rollback configuration
+  rollback_drawdown_threshold: 15.0         # Max drawdown increase % to trigger rollback
+
+  # Learning memory configuration
+  memory_blacklist_threshold: 40.0          # Drawdown % that triggers blacklisting
+  memory_max_entries: 1000                  # Max parameter sets to remember
+
+# Optimization targets (success criteria)
+optimization_targets:
+  profit_target: 25.0                       # Target profit % (raised to 25%)
+  win_rate_target: 40.0                     # Target win rate %
+  max_drawdown_target: 20.0                 # Target max drawdown %
+  stability_window: 10                      # Iterations to maintain targets
+
+# Minimum evaluation horizon
+min_evaluation_horizon:
+  trades: 5                                 # Minimum trades before evaluation
+  iterations: 3                             # Minimum iterations before parameter change
+
+# AI Optimization constraints
+ai_constraints:
+  max_params_per_iteration: 2               # Max parameters to modify per iteration
+  hold_if_improved_regimes: 2               # Hold if N+ regimes improve
+  temperature: 0.5                          # LLM response temperature
+  max_tokens: 1000                          # Max tokens for LLM response
