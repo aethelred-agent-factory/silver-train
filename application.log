@@ -1,0 +1,275 @@
+WARNING:root:Failed to load logging configuration file. Using default configs
+INFO:root:Loaded configuration: system_config
+INFO:root:Loaded configuration: audit_rules
+INFO:root:Loaded configuration: regime_config
+INFO:root:Loaded configuration: parameter_bounds
+INFO:root:Loaded configuration: safe_baseline
+INFO:root:Loaded configuration: stability_guards
+INFO:root:Loaded configuration: optimization_config
+INFO:root:Starting the Self-Auditing Strategy Optimizer...
+INFO:root:Selected trading mode: PAPER
+INFO:root:Initializing components...
+INFO:root:Initialized StateManager with DB: strategy_optimizer/data/state/optimizer_state.db
+INFO:root:Initialized CryptoUtils.
+INFO:root:Initialized IncidentTracker.
+INFO:root:Initialized ApprovalWorkflow.
+INFO:root:Initialized RestrictionEnforcer.
+INFO:root:Initialized EmergencyManager.
+INFO:root:Initialized persistent EventBus.
+INFO:root:Initialized Paper Trading Adapter.
+INFO:root:Initialized MarketDataBus with exchange: phemex
+INFO:root:Initialized IndicatorEngine.
+INFO:root:Initialized RegimeClassifier.
+INFO:root:Initialized PositionManager.
+INFO:root:Initialized PerformanceMetrics.
+INFO:root:Initialized BacktestEngine.
+INFO:root:DataBootstrapValidator initialized. Required symbols: ['ETH', 'SOL', 'AVAX', 'BTC']
+INFO:root:Validating data for 4 symbols...
+INFO:root:  ✓ ETH: 1000 candles, range 2025-12-20 15:00:00+00:00 to 2026-01-31 06:00:00+00:00
+INFO:root:  ✓ SOL: 1000 candles, range 2025-12-20 15:00:00+00:00 to 2026-01-31 06:00:00+00:00
+INFO:root:  ✓ AVAX: 1000 candles, range 2025-12-20 15:00:00+00:00 to 2026-01-31 06:00:00+00:00
+INFO:root:  ✓ BTC: 1000 candles, range 2025-12-20 15:00:00+00:00 to 2026-01-31 06:00:00+00:00
+INFO:root:✓ All required market data validated successfully
+INFO:root:✓ Real market data validated and available
+INFO:root:Initialized PortfolioState with capital: 10000.0
+INFO:root:Initialized LLMInterface.
+INFO:root:Initialized FallbackMode.
+INFO:root:Loaded 0 blacklisted parameter sets
+INFO:root:Parameter memory tables initialized.
+INFO:root:Initialized ParameterMemory with learning memory tracking.
+INFO:root:Initialized SignalGenerator.
+INFO:root:Initialized StabilityGuards with spec thresholds:
+INFO:root:  Freeze profit threshold: 5.0%
+INFO:root:  Freeze duration: 5 iterations
+INFO:root:  Consecutive improving for freeze: 3
+INFO:root:  Rollback drawdown spike: 15.0%
+INFO:root:  Blacklist drawdown threshold: 40.0%
+INFO:root:Initialized StrategyOptimizer.
+INFO:root:Initialized ArtifactManager with local storage: strategy_optimizer/data/artifacts
+INFO:root:Initialized T1Checks.
+INFO:root:Initialized T2Checks.
+INFO:root:Initialized T3Checks.
+INFO:root:Initialized CausalChainValidator.
+INFO:root:Initialized ArtifactStore.
+INFO:root:Initialized AuditLayer.
+INFO:root:Initialized OrderManager.
+INFO:root:Initialized ExecutionEngine.
+INFO:root:All components initialized.
+INFO:root:AuditLayer is listening for proposals.
+INFO:root:Audit layer started in a background thread.
+INFO:root:
+================================================================================
+INFO:root:STARTING MINIMAL VIABLE TRADING PATH (MVTP)
+INFO:root:MODE: PAPER TRADING
+INFO:root:================================================================================
+
+INFO:root:
+ITERATION 1 - 2026-01-31 17:20:09
+INFO:root:Step 1: Ingesting live market data...
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:20:09.009663 to 2026-01-31T17:20:09.009663
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Step 2: Generating signals from indicators...
+INFO:root:Generating signals for BTC/USDT with params: {'min_score': 1.0, 'rsi_oversold': 30, 'rsi_overbought': 70, 'stop_multiplier': 2.0, 'target_multiplier': 2.0, 'risk_pct': 1.0}
+INFO:root:Computing all indicators for BTC/USDT from None to None
+INFO:root:Retrieving candles for BTC/USDT from None to None
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:  - Latest Price: 83788.48
+INFO:root:  - Signal: 1 (Score: 2.20)
+INFO:root:✓ BUY SIGNAL DETECTED
+INFO:root:Published proposal 697b3a83-949e-4ac6-a799-f237a9729f18 to the persistent event bus.
+INFO:root:Published proposal 697b3a83-949e-4ac6-a799-f237a9729f18: HOLD
+INFO:root:Auditing proposal 697b3a83-949e-4ac6-a799-f237a9729f18
+INFO:root:Running T1 checks for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
+INFO:root:Running T2 checks for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
+INFO:root:Running T3 checks for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
+INFO:root:Validating causal chain for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
+ERROR:root:Causal chain validation failed: Artifact 9be24bbb-2d6d-465f-ae5c-ee24c52f922b not found.
+INFO:root:Saved audit_f4cc150b-1c8b-4eda-8ab5-2d27227f1578.json to local storage.
+INFO:root:Stored audit artifact audit_f4cc150b-1c8b-4eda-8ab5-2d27227f1578.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_f4cc150b-1c8b-4eda-8ab5-2d27227f1578.json with checksum cebc6afc2629000d82b2ab1cfd78808b46a724bd49b28e6824805384c8507b64
+INFO:root:Published verdict f4cc150b-1c8b-4eda-8ab5-2d27227f1578 for proposal 697b3a83-949e-4ac6-a799-f237a9729f18.
+INFO:root:  - Audit Verdict: ALLOW_WITH_RESTRICTION
+INFO:root:Step 5: Routing through hardened execution boundary...
+INFO:root:Attempting to execute trade for BTC/USDT | Proposal: 697b3a83-949e-4ac6-a799-f237a9729f18
+INFO:root:Placing buy order for 0.0025 BTC/USDT at price 83788.48
+INFO:root:Order 697b3a83-949e-4ac6-a799-f237a9729f18-1769880009 placed successfully.
+INFO:root:✓ Trade successfully routed to OrderManager
+INFO:root:Subscribed to proposal 697b3a83-949e-4ac6-a799-f237a9729f18 from the persistent event bus.
+INFO:root:Auditing proposal 697b3a83-949e-4ac6-a799-f237a9729f18
+INFO:root:Running T1 checks for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
+INFO:root:Running T2 checks for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
+INFO:root:Running T3 checks for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
+INFO:root:Validating causal chain for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
+ERROR:root:Causal chain validation failed: Artifact 9be24bbb-2d6d-465f-ae5c-ee24c52f922b not found.
+INFO:root:Saved audit_3c3dc4a0-e793-4073-9317-f39d9d8e342f.json to local storage.
+INFO:root:Stored audit artifact audit_3c3dc4a0-e793-4073-9317-f39d9d8e342f.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_3c3dc4a0-e793-4073-9317-f39d9d8e342f.json with checksum c1da1476d24df077a7ffb2735fd20bd02f11e545f21e9776b30643c4781e2d29
+INFO:root:Published verdict 3c3dc4a0-e793-4073-9317-f39d9d8e342f for proposal 697b3a83-949e-4ac6-a799-f237a9729f18.
+INFO:root:
+ITERATION 2 - 2026-01-31 17:21:09
+INFO:root:Step 1: Ingesting live market data...
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:21:09.799986 to 2026-01-31T17:21:09.799986
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Step 2: Generating signals from indicators...
+INFO:root:Generating signals for BTC/USDT with params: {'min_score': 1.0, 'rsi_oversold': 30, 'rsi_overbought': 70, 'stop_multiplier': 2.0, 'target_multiplier': 2.0, 'risk_pct': 1.0}
+INFO:root:Computing all indicators for BTC/USDT from None to None
+INFO:root:Retrieving candles for BTC/USDT from None to None
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:  - Latest Price: 83788.48
+INFO:root:  - Signal: 1 (Score: 2.20)
+INFO:root:✓ BUY SIGNAL DETECTED
+INFO:root:Published proposal 7350b286-a567-435b-b1cd-8fda3b062878 to the persistent event bus.
+INFO:root:Published proposal 7350b286-a567-435b-b1cd-8fda3b062878: HOLD
+INFO:root:Auditing proposal 7350b286-a567-435b-b1cd-8fda3b062878
+INFO:root:Running T1 checks for proposal 7350b286-a567-435b-b1cd-8fda3b062878
+INFO:root:Running T2 checks for proposal 7350b286-a567-435b-b1cd-8fda3b062878
+INFO:root:Running T3 checks for proposal 7350b286-a567-435b-b1cd-8fda3b062878
+INFO:root:Validating causal chain for proposal 7350b286-a567-435b-b1cd-8fda3b062878
+ERROR:root:Causal chain validation failed: Artifact 697b3a83-949e-4ac6-a799-f237a9729f18 not found.
+INFO:root:Saved audit_0f92b0d6-b6ca-4de1-94a0-4a1ded38e88c.json to local storage.
+INFO:root:Stored audit artifact audit_0f92b0d6-b6ca-4de1-94a0-4a1ded38e88c.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_0f92b0d6-b6ca-4de1-94a0-4a1ded38e88c.json with checksum abb94d035c5207c641a53c2cd9b4d14671d21beecca20c6cd8282f949ffaf87a
+INFO:root:Published verdict 0f92b0d6-b6ca-4de1-94a0-4a1ded38e88c for proposal 7350b286-a567-435b-b1cd-8fda3b062878.
+INFO:root:  - Audit Verdict: ALLOW_WITH_RESTRICTION
+INFO:root:Step 5: Routing through hardened execution boundary...
+INFO:root:Attempting to execute trade for BTC/USDT | Proposal: 7350b286-a567-435b-b1cd-8fda3b062878
+INFO:root:Placing buy order for 0.0025 BTC/USDT at price 83788.48
+INFO:root:Order 7350b286-a567-435b-b1cd-8fda3b062878-1769880071 placed successfully.
+INFO:root:✓ Trade successfully routed to OrderManager
+INFO:root:Subscribed to proposal 7350b286-a567-435b-b1cd-8fda3b062878 from the persistent event bus.
+INFO:root:Auditing proposal 7350b286-a567-435b-b1cd-8fda3b062878
+INFO:root:Running T1 checks for proposal 7350b286-a567-435b-b1cd-8fda3b062878
+INFO:root:Running T2 checks for proposal 7350b286-a567-435b-b1cd-8fda3b062878
+INFO:root:Running T3 checks for proposal 7350b286-a567-435b-b1cd-8fda3b062878
+INFO:root:Validating causal chain for proposal 7350b286-a567-435b-b1cd-8fda3b062878
+ERROR:root:Causal chain validation failed: Artifact 697b3a83-949e-4ac6-a799-f237a9729f18 not found.
+INFO:root:Saved audit_6f46f486-8cba-4062-93c4-1fde631d50e8.json to local storage.
+INFO:root:Stored audit artifact audit_6f46f486-8cba-4062-93c4-1fde631d50e8.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_6f46f486-8cba-4062-93c4-1fde631d50e8.json with checksum f0b5522153c97671df4b7bcf3e0ef3331c74cd735cc299cfce7222e660a5a6cf
+INFO:root:Published verdict 6f46f486-8cba-4062-93c4-1fde631d50e8 for proposal 7350b286-a567-435b-b1cd-8fda3b062878.
+INFO:root:
+ITERATION 3 - 2026-01-31 17:22:11
+INFO:root:Step 1: Ingesting live market data...
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:22:11.589208 to 2026-01-31T17:22:11.589208
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Step 2: Generating signals from indicators...
+INFO:root:Generating signals for BTC/USDT with params: {'min_score': 1.0, 'rsi_oversold': 30, 'rsi_overbought': 70, 'stop_multiplier': 2.0, 'target_multiplier': 2.0, 'risk_pct': 1.0}
+INFO:root:Computing all indicators for BTC/USDT from None to None
+INFO:root:Retrieving candles for BTC/USDT from None to None
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:  - Latest Price: 83788.48
+INFO:root:  - Signal: 1 (Score: 2.20)
+INFO:root:✓ BUY SIGNAL DETECTED
+INFO:root:Published proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d to the persistent event bus.
+INFO:root:Published proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d: HOLD
+INFO:root:Auditing proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
+INFO:root:Running T1 checks for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
+INFO:root:Running T2 checks for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
+INFO:root:Running T3 checks for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
+INFO:root:Validating causal chain for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
+ERROR:root:Causal chain validation failed: Artifact 7350b286-a567-435b-b1cd-8fda3b062878 not found.
+INFO:root:Saved audit_726d1bb6-cc87-46cc-b3ac-760f09f1fda8.json to local storage.
+INFO:root:Stored audit artifact audit_726d1bb6-cc87-46cc-b3ac-760f09f1fda8.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_726d1bb6-cc87-46cc-b3ac-760f09f1fda8.json with checksum 5d853581727be46582da7ec5360b8bdc17935dbc21e4325af904b1ffdd6af2cf
+INFO:root:Published verdict 726d1bb6-cc87-46cc-b3ac-760f09f1fda8 for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d.
+INFO:root:  - Audit Verdict: ALLOW_WITH_RESTRICTION
+INFO:root:Step 5: Routing through hardened execution boundary...
+INFO:root:Attempting to execute trade for BTC/USDT | Proposal: ac2fecac-2948-4f2d-8d4b-5499a1afba4d
+INFO:root:Placing buy order for 0.0025 BTC/USDT at price 83788.48
+INFO:root:Order ac2fecac-2948-4f2d-8d4b-5499a1afba4d-1769880132 placed successfully.
+INFO:root:✓ Trade successfully routed to OrderManager
+INFO:root:Subscribed to proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d from the persistent event bus.
+INFO:root:Auditing proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
+INFO:root:Running T1 checks for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
+INFO:root:Running T2 checks for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
+INFO:root:Running T3 checks for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
+INFO:root:Validating causal chain for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
+ERROR:root:Causal chain validation failed: Artifact 7350b286-a567-435b-b1cd-8fda3b062878 not found.
+INFO:root:Saved audit_c6f3eada-a837-4df3-89b5-2cae5a518354.json to local storage.
+INFO:root:Stored audit artifact audit_c6f3eada-a837-4df3-89b5-2cae5a518354.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_c6f3eada-a837-4df3-89b5-2cae5a518354.json with checksum 1ecf55df5810d86a26d86072c45ae1d3e70809e647f5f9a8420d877de52bc4ef
+INFO:root:Published verdict c6f3eada-a837-4df3-89b5-2cae5a518354 for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d.
+INFO:root:
+ITERATION 4 - 2026-01-31 17:23:12
+INFO:root:Step 1: Ingesting live market data...
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:23:12.416302 to 2026-01-31T17:23:12.416302
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Step 2: Generating signals from indicators...
+INFO:root:Generating signals for BTC/USDT with params: {'min_score': 1.0, 'rsi_oversold': 30, 'rsi_overbought': 70, 'stop_multiplier': 2.0, 'target_multiplier': 2.0, 'risk_pct': 1.0}
+INFO:root:Computing all indicators for BTC/USDT from None to None
+INFO:root:Retrieving candles for BTC/USDT from None to None
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:  - Latest Price: 83788.48
+INFO:root:  - Signal: 1 (Score: 2.20)
+INFO:root:✓ BUY SIGNAL DETECTED
+INFO:root:Published proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b to the persistent event bus.
+INFO:root:Published proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b: HOLD
+INFO:root:Auditing proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
+INFO:root:Running T1 checks for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
+INFO:root:Running T2 checks for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
+INFO:root:Running T3 checks for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
+INFO:root:Validating causal chain for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
+ERROR:root:Causal chain validation failed: Artifact ac2fecac-2948-4f2d-8d4b-5499a1afba4d not found.
+INFO:root:Saved audit_525a54d2-72bc-45ea-bf78-dc1ae6652ed1.json to local storage.
+INFO:root:Stored audit artifact audit_525a54d2-72bc-45ea-bf78-dc1ae6652ed1.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_525a54d2-72bc-45ea-bf78-dc1ae6652ed1.json with checksum a97817e2cc6177a98c7c7d01e9877a4057fe084c6b3ac4ba76ad2776a58ae092
+INFO:root:Published verdict 525a54d2-72bc-45ea-bf78-dc1ae6652ed1 for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b.
+INFO:root:  - Audit Verdict: ALLOW_WITH_RESTRICTION
+INFO:root:Step 5: Routing through hardened execution boundary...
+INFO:root:Attempting to execute trade for BTC/USDT | Proposal: ebf2dcc0-0146-41ee-bf7a-7737a148f26b
+INFO:root:Placing buy order for 0.0025 BTC/USDT at price 83788.48
+INFO:root:Order ebf2dcc0-0146-41ee-bf7a-7737a148f26b-1769880193 placed successfully.
+INFO:root:✓ Trade successfully routed to OrderManager
+INFO:root:Subscribed to proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b from the persistent event bus.
+INFO:root:Auditing proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
+INFO:root:Running T1 checks for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
+INFO:root:Running T2 checks for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
+INFO:root:Running T3 checks for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
+INFO:root:Validating causal chain for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
+ERROR:root:Causal chain validation failed: Artifact ac2fecac-2948-4f2d-8d4b-5499a1afba4d not found.
+INFO:root:Saved audit_6e83ad29-01e3-4a27-8cd5-f849d619f46c.json to local storage.
+INFO:root:Stored audit artifact audit_6e83ad29-01e3-4a27-8cd5-f849d619f46c.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_6e83ad29-01e3-4a27-8cd5-f849d619f46c.json with checksum fe85c4560e9488389078045b63d4eecce75dd2eca435c57ab6b4a896706aea0d
+INFO:root:Published verdict 6e83ad29-01e3-4a27-8cd5-f849d619f46c for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b.
+INFO:root:
+ITERATION 5 - 2026-01-31 17:24:13
+INFO:root:Step 1: Ingesting live market data...
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:24:13.269046 to 2026-01-31T17:24:13.269046
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Step 2: Generating signals from indicators...
+INFO:root:Generating signals for BTC/USDT with params: {'min_score': 1.0, 'rsi_oversold': 30, 'rsi_overbought': 70, 'stop_multiplier': 2.0, 'target_multiplier': 2.0, 'risk_pct': 1.0}
+INFO:root:Computing all indicators for BTC/USDT from None to None
+INFO:root:Retrieving candles for BTC/USDT from None to None
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:  - Latest Price: 83788.48
+INFO:root:  - Signal: 1 (Score: 2.20)
+INFO:root:✓ BUY SIGNAL DETECTED
+INFO:root:Published proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5 to the persistent event bus.
+INFO:root:Published proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5: HOLD
+INFO:root:Auditing proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
+INFO:root:Running T1 checks for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
+INFO:root:Running T2 checks for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
+INFO:root:Running T3 checks for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
+INFO:root:Validating causal chain for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
+ERROR:root:Causal chain validation failed: Artifact ebf2dcc0-0146-41ee-bf7a-7737a148f26b not found.
+INFO:root:Saved audit_1a185fc5-27e9-475d-9b8d-2c597b342ff8.json to local storage.
+INFO:root:Stored audit artifact audit_1a185fc5-27e9-475d-9b8d-2c597b342ff8.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_1a185fc5-27e9-475d-9b8d-2c597b342ff8.json with checksum c12aed09a88989837274edc147e349b597a98f3b72e41d829222d480de9d6f4d
+INFO:root:Published verdict 1a185fc5-27e9-475d-9b8d-2c597b342ff8 for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5.
+INFO:root:  - Audit Verdict: ALLOW_WITH_RESTRICTION
+INFO:root:Step 5: Routing through hardened execution boundary...
+INFO:root:Attempting to execute trade for BTC/USDT | Proposal: 54a785dc-dc51-411b-bc60-68e9fd465cb5
+INFO:root:Placing buy order for 0.0025 BTC/USDT at price 83788.48
+INFO:root:Order 54a785dc-dc51-411b-bc60-68e9fd465cb5-1769880254 placed successfully.
+INFO:root:✓ Trade successfully routed to OrderManager
+INFO:root:Subscribed to proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5 from the persistent event bus.
+INFO:root:Auditing proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
+INFO:root:Running T1 checks for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
+INFO:root:Running T2 checks for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
+INFO:root:Running T3 checks for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
+INFO:root:Validating causal chain for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
+ERROR:root:Causal chain validation failed: Artifact ebf2dcc0-0146-41ee-bf7a-7737a148f26b not found.
+INFO:root:Saved audit_0fd38065-3d41-480e-bf57-972c189a06c6.json to local storage.
+INFO:root:Stored audit artifact audit_0fd38065-3d41-480e-bf57-972c189a06c6.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_0fd38065-3d41-480e-bf57-972c189a06c6.json with checksum ad97ca5ee14d731cbeee864be0a056d9d1971ed7aeac16c4dc846fd72b5a5009
+INFO:root:Published verdict 0fd38065-3d41-480e-bf57-972c189a06c6 for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5.

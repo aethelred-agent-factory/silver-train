@@ -1,0 +1,10 @@
+# Ignore virtualenv
+.venv/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore other
+.DS_Store
+*.ipynb_checkpoints
