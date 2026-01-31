@@ -1,11 +1,42 @@
-# Ignore virtualenv
+# Virtual environment
+venv/
+env/
 .venv/
 
-# Ignore Python cache
+# Python cache
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
 
-# Ignore other
+# Data directories
+data/state/*.db
+data/artifacts/*.json
+data/artifacts/*.sha256
+logs/*.log
+
+# Archives (if regenerable)
+archives/*.tar.gz
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
 .DS_Store
-*.ipynb_checkpoints
-/home/user/silver-train/application.log
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
