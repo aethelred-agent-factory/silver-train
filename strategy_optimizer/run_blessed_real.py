@@ -176,7 +176,7 @@ def main():
                 backtest_trades=backtest_result.total_trades,
                 sharpe_ratio=backtest_result.sharpe_ratio,
                 profit=backtest_result.total_return_pct,
-                win_rate=backtest_result.win_rate * 100,
+                win_rate=backtest_result.win_rate,
             )
             print(f"  🎲 Trades:        {backtest_result.total_trades}")
             print(f"  💰 Profit:        {backtest_result.total_return_pct:.2f}%")
@@ -188,7 +188,7 @@ def main():
             'profit': backtest_result.total_return_pct if backtest_result else 0,
             'profit_pct': backtest_result.total_return_pct if backtest_result else 0,
             'max_drawdown_pct': backtest_result.max_drawdown_pct if backtest_result else 0,
-            'win_rate': (backtest_result.win_rate * 100) if backtest_result else 0,
+            'win_rate': backtest_result.win_rate if backtest_result else 0,
             'total_trades': backtest_result.total_trades if backtest_result else 0,
             'sharpe_ratio': backtest_result.sharpe_ratio if backtest_result else 0,
         }
@@ -257,7 +257,7 @@ def main():
                 
                 if amount > 0:
                     order_manager.place_order(
-                        symbol, 'buy' if last_signal == 1 else 'sell', amount, proposed_params, entry_price
+                        symbol, 'buy' if last_signal == 1 else 'sell', amount, proposal, entry_price
                     )
                     dashboard.print_trade_executed('BUY' if last_signal == 1 else 'SELL', amount, entry_price)
             else:

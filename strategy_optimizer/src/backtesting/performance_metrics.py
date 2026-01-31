@@ -45,7 +45,7 @@ class PerformanceMetrics:
         """Calculates all performance metrics."""
         logging.info("Calculating all performance metrics.")
         
-        win_rate = (winning_trades / total_trades) * 100 if total_trades > 0 else 0.0
+        win_rate = (winning_trades / total_trades) if total_trades > 0 else 0.0
 
         metrics = {
             'sharpe_ratio': self.calculate_sharpe_ratio(equity_curve),

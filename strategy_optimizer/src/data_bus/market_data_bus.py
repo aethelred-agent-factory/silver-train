@@ -108,7 +108,7 @@ class MarketDataBus:
         df = table.to_pandas()
         
         # Ensure timestamps are timezone-aware UTC for safe comparisons
-        if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+        if not isinstance(df['timestamp'].dtype, pd.DatetimeTZDtype):
             df['timestamp'] = pd.to_datetime(df['timestamp']).dt.tz_localize('UTC')
         
         if start:

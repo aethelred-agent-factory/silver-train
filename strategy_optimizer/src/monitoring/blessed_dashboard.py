@@ -30,6 +30,7 @@ class BlessedDashboard:
             'regime': 'INITIALIZING',
             'backtest_trades': 0,
             'sharpe_ratio': 0.0,
+            'win_rate': 0.0,
             'audit_verdict': 'PENDING',
             'runtime_seconds': 0,
         }
@@ -196,8 +197,10 @@ class BlessedDashboard:
         
         # Optimization Metrics
         right_y += 7
+        win_rate_pct = self.state['win_rate'] * 100
         metrics_content = f"""╔═ BACKTEST METRICS
 ║ Trades Executed: {self.state['backtest_trades']:>3}
+║ Win Rate:        {win_rate_pct:.2f}%
 ║ Audit Status:    {self.state['audit_verdict']:<10}
 ║ Runtime:        {self.state['runtime_seconds']:>3}s
 ╚═══════════════════════════════════════════"""
@@ -284,6 +287,7 @@ def demo_blessed_dashboard():
             iteration=iteration,
             backtest_trades=50 + (iteration * 15),
             sharpe_ratio=0.85 + (iteration * 0.1),
+            win_rate=0.5 + (iteration * 0.05),
             current_equity=10000 + (iteration * 500),
             total_pnl=iteration * 500,
             pnl_pct=(iteration * 500) / 10000 * 100,
