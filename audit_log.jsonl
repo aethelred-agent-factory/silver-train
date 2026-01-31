@@ -215,3 +215,12 @@
 {"timestamp": "2026-01-31T21:07:08.662447", "order": {"symbol": "BTC/USDT", "signal": 1, "amount": 0.01, "price": 83788.48}, "simulated_balance": 70255.0896}
 {"timestamp": "2026-01-31T21:08:10.487804", "order": {"symbol": "BTC/USDT", "signal": 1, "amount": 0.01, "price": 83788.48}, "simulated_balance": 70045.6184}
 {"timestamp": "2026-01-31T21:09:12.340207", "order": {"symbol": "BTC/USDT", "signal": 1, "amount": 0.01, "price": 83788.48}, "simulated_balance": 69836.1472}
+{"timestamp": "2026-01-31T21:10:14.338695", "order": {"symbol": "BTC/USDT", "signal": 1, "amount": 0.01, "price": 83788.48}, "simulated_balance": 69626.676}
+{"timestamp": "2026-01-31T21:11:16.190564", "order": {"symbol": "BTC/USDT", "signal": 1, "amount": 0.01, "price": 83788.48}, "simulated_balance": 69417.2048}
+{"timestamp": "2026-01-31T21:12:19.045940", "order": {"symbol": "BTC/USDT", "signal": 1, "amount": 0.01, "price": 83788.48}, "simulated_balance": 69207.7336}
+{"timestamp": "2026-01-31T21:13:22.747400", "order": {"symbol": "BTC/USDT", "signal": 1, "amount": 0.01, "price": 83788.48}, "simulated_balance": 68998.2624}
+{"timestamp": "2026-01-31T21:14:26.563260", "order": {"symbol": "BTC/USDT", "signal": 1, "amount": 0.01, "price": 83788.48}, "simulated_balance": 68788.7912}
+{"timestamp": "2026-01-31T21:15:29.404550", "order": {"symbol": "BTC/USDT", "signal": 1, "amount": 0.01, "price": 83788.48}, "simulated_balance": 68579.32}
+{"timestamp": "2026-01-31T21:16:32.871962", "order": {"symbol": "BTC/USDT", "signal": 1, "amount": 0.01, "price": 83788.48}, "simulated_balance": 68369.8488}
+{"timestamp": "2026-01-31T21:17:34.965732", "order": {"symbol": "BTC/USDT", "signal": 1, "amount": 0.01, "price": 83788.48}, "simulated_balance": 68160.3776}
+{"timestamp": "2026-01-31T21:18:37.795085", "order": {"symbol": "BTC/USDT", "signal": 1, "amount": 0.01, "price": 83788.48}, "simulated_balance": 67950.9064}
