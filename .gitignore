@@ -8,3 +8,4 @@ __pycache__/
 # Ignore other
 .DS_Store
 *.ipynb_checkpoints
+/home/user/silver-train/application.log

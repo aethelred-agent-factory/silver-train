@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 """
 Real Blessed Dashboard - Integrated with Strategy Optimizer
 Live TUI monitoring of actual optimization iterations with real data
@@ -59,7 +59,7 @@ from monitoring.blessed_dashboard import BlessedDashboard
 logging.getLogger().setLevel(logging.CRITICAL)
 
 
-def load_all_config(config_dir='config'):
+def load_all_config(config_dir='strategy_optimizer/config'):
     """Load all configuration files"""
     config = {}
     config_files = [
@@ -140,7 +140,7 @@ def main():
     audit_layer = AuditLayer(config, event_bus, t1_checks, t2_checks, t3_checks, causal_chain_validator, artifact_store)
     
     order_manager = OrderManager(config, exchange_adapter, state_manager)
-    execution_engine = ExecutionEngine(config, order_manager)
+    execution_engine = ExecutionEngine(config, order_manager, state_manager, portfolio_state)
     
     incident_tracker = IncidentTracker(config, state_manager)
     approval_workflow = ApprovalWorkflow(config, state_manager)
