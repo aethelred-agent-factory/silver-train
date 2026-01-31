@@ -1,0 +1,37 @@
+{
+    "audit_id": "27ae1750-c8e8-484d-aa8c-edcf273df78d",
+    "proposal_id": "64b55964-bb03-4279-8c6d-4ebf83a7e6e5",
+    "timestamp": "2026-01-31T18:15:52.032031+00:00",
+    "tiered_findings": [
+        {
+            "tier": "T2",
+            "code": "T2_InsufficientSample",
+            "explanation": "Trades in sample (N=0) < configured N_min (100)",
+            "impact": null,
+            "remediation": null
+        },
+        {
+            "tier": "T2",
+            "code": "T2_CausalGap",
+            "explanation": "Proposal is missing a causal chain.",
+            "impact": null,
+            "remediation": null
+        },
+        {
+            "tier": "T3",
+            "code": "T3_ConfigGap",
+            "explanation": "Missing 'liquidity_thresholds' in system_config.yaml.",
+            "impact": null,
+            "remediation": null
+        }
+    ],
+    "action": {
+        "type": "ALLOW_WITH_RESTRICTION",
+        "restrictions": {
+            "max_order_size_pct": 0.25,
+            "reason": "T2 flags: T2_InsufficientSample, T2_CausalGap"
+        }
+    },
+    "artifact_refs": [],
+    "checksum": ""
+}

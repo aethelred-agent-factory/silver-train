@@ -38,7 +38,7 @@ monitoring:
   dashboard_port: 5000
   health_check_interval: 60 # seconds
   log_level: 'INFO'
-  dashboard_enabled: false
+  dashboard_enabled: true
 
 optimization:
   min_iterations_before_freeze: 3    # Must run at least N iterations before allowing freeze
