@@ -91,6 +91,8 @@ class AuditLayer:
             try:
                 proposal = self.event_bus.subscribe_proposal()
                 if proposal:
+                    # Wait for the artifact_created event
+                    self.event_bus.wait_for_event("artifact_created")
                     self.audit_proposal(proposal)
                 else:
                     # Sleep when the queue is empty to prevent busy-waiting

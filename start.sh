@@ -1,4 +1,5 @@
 #!/bin/bash
 
-nix-shell --run 'python strategy_optimizer/src/main.py --mode paper > application.log 2>&1' &
-nix-shell --run 'cd strategy_optimizer && python view_dashboard.py' &
+# Start the main application with the web dashboard
+# The web dashboard is now integrated into the main application
+nix-shell --run 'python strategy_optimizer/src/main.py --mode paper > application.log 2>&1'

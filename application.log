@@ -52,11 +52,15 @@ INFO:root:Initialized T3Checks.
 INFO:root:Initialized CausalChainValidator.
 INFO:root:Initialized ArtifactStore.
 INFO:root:Initialized AuditLayer.
+INFO:root:Initialized MetricsCollector.
+INFO:root:Initialized DashboardServer on port 5000.
 INFO:root:Initialized OrderManager.
 INFO:root:Initialized ExecutionEngine.
 INFO:root:All components initialized.
 INFO:root:AuditLayer is listening for proposals.
 INFO:root:Audit layer started in a background thread.
+INFO:root:Starting dashboard server on http://0.0.0.0:5000
+INFO:root:Dashboard server started in a background thread.
 INFO:root:
 ================================================================================
 INFO:root:STARTING MINIMAL VIABLE TRADING PATH (MVTP)
@@ -64,9 +68,14 @@ INFO:root:MODE: PAPER TRADING
 INFO:root:================================================================================
 
 INFO:root:
-ITERATION 1 - 2026-01-31 17:20:09
+ITERATION 1 - 2026-01-31 17:43:55
 INFO:root:Step 1: Ingesting live market data...
-INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:20:09.009663 to 2026-01-31T17:20:09.009663
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:43:55.594342 to 2026-01-31T17:43:55.594342
+INFO:root:Subscribed to proposal b149fe77-642d-4e08-ae48-8799afddb917 from the persistent event bus.
+INFO:     Started server process [32586]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:5000 (Press CTRL+C to quit)
 /home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
   if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
 INFO:root:Step 2: Generating signals from indicators...
@@ -78,37 +87,21 @@ INFO:root:Retrieving candles for BTC/USDT from None to None
 INFO:root:  - Latest Price: 83788.48
 INFO:root:  - Signal: 1 (Score: 2.20)
 INFO:root:✓ BUY SIGNAL DETECTED
-INFO:root:Published proposal 697b3a83-949e-4ac6-a799-f237a9729f18 to the persistent event bus.
-INFO:root:Published proposal 697b3a83-949e-4ac6-a799-f237a9729f18: HOLD
-INFO:root:Auditing proposal 697b3a83-949e-4ac6-a799-f237a9729f18
-INFO:root:Running T1 checks for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
-INFO:root:Running T2 checks for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
-INFO:root:Running T3 checks for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
-INFO:root:Validating causal chain for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
-ERROR:root:Causal chain validation failed: Artifact 9be24bbb-2d6d-465f-ae5c-ee24c52f922b not found.
-INFO:root:Saved audit_f4cc150b-1c8b-4eda-8ab5-2d27227f1578.json to local storage.
-INFO:root:Stored audit artifact audit_f4cc150b-1c8b-4eda-8ab5-2d27227f1578.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_f4cc150b-1c8b-4eda-8ab5-2d27227f1578.json with checksum cebc6afc2629000d82b2ab1cfd78808b46a724bd49b28e6824805384c8507b64
-INFO:root:Published verdict f4cc150b-1c8b-4eda-8ab5-2d27227f1578 for proposal 697b3a83-949e-4ac6-a799-f237a9729f18.
-INFO:root:  - Audit Verdict: ALLOW_WITH_RESTRICTION
-INFO:root:Step 5: Routing through hardened execution boundary...
-INFO:root:Attempting to execute trade for BTC/USDT | Proposal: 697b3a83-949e-4ac6-a799-f237a9729f18
-INFO:root:Placing buy order for 0.0025 BTC/USDT at price 83788.48
-INFO:root:Order 697b3a83-949e-4ac6-a799-f237a9729f18-1769880009 placed successfully.
-INFO:root:✓ Trade successfully routed to OrderManager
-INFO:root:Subscribed to proposal 697b3a83-949e-4ac6-a799-f237a9729f18 from the persistent event bus.
-INFO:root:Auditing proposal 697b3a83-949e-4ac6-a799-f237a9729f18
-INFO:root:Running T1 checks for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
-INFO:root:Running T2 checks for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
-INFO:root:Running T3 checks for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
-INFO:root:Validating causal chain for proposal 697b3a83-949e-4ac6-a799-f237a9729f18
-ERROR:root:Causal chain validation failed: Artifact 9be24bbb-2d6d-465f-ae5c-ee24c52f922b not found.
-INFO:root:Saved audit_3c3dc4a0-e793-4073-9317-f39d9d8e342f.json to local storage.
-INFO:root:Stored audit artifact audit_3c3dc4a0-e793-4073-9317-f39d9d8e342f.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_3c3dc4a0-e793-4073-9317-f39d9d8e342f.json with checksum c1da1476d24df077a7ffb2735fd20bd02f11e545f21e9776b30643c4781e2d29
-INFO:root:Published verdict 3c3dc4a0-e793-4073-9317-f39d9d8e342f for proposal 697b3a83-949e-4ac6-a799-f237a9729f18.
+INFO:root:Published proposal 2fa3d0bf-2180-4574-a5f0-4d842c51ec87 to the persistent event bus.
+INFO:root:Published proposal 2fa3d0bf-2180-4574-a5f0-4d842c51ec87: HOLD
+INFO:root:Saved 2fa3d0bf-2180-4574-a5f0-4d842c51ec87 to local storage.
+ERROR:root:Error in audit listener loop: Timed out waiting for event artifact_created
+Traceback (most recent call last):
+  File "/home/user/silver-train/strategy_optimizer/src/audit/audit_layer.py", line 95, in listen_for_proposals
+    self.event_bus.wait_for_event("artifact_created")
+  File "/home/user/silver-train/strategy_optimizer/src/data_bus/event_bus.py", line 138, in wait_for_event
+    raise TimeoutError(f"Timed out waiting for event {event_name}")
+TimeoutError: Timed out waiting for event artifact_created
+ERROR:root:Timeout waiting for audit verdict for proposal 2fa3d0bf-2180-4574-a5f0-4d842c51ec87
 INFO:root:
-ITERATION 2 - 2026-01-31 17:21:09
+ITERATION 2 - 2026-01-31 17:44:06
 INFO:root:Step 1: Ingesting live market data...
-INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:21:09.799986 to 2026-01-31T17:21:09.799986
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:44:06.765396 to 2026-01-31T17:44:06.765396
 /home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
   if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
 INFO:root:Step 2: Generating signals from indicators...
@@ -120,37 +113,15 @@ INFO:root:Retrieving candles for BTC/USDT from None to None
 INFO:root:  - Latest Price: 83788.48
 INFO:root:  - Signal: 1 (Score: 2.20)
 INFO:root:✓ BUY SIGNAL DETECTED
-INFO:root:Published proposal 7350b286-a567-435b-b1cd-8fda3b062878 to the persistent event bus.
-INFO:root:Published proposal 7350b286-a567-435b-b1cd-8fda3b062878: HOLD
-INFO:root:Auditing proposal 7350b286-a567-435b-b1cd-8fda3b062878
-INFO:root:Running T1 checks for proposal 7350b286-a567-435b-b1cd-8fda3b062878
-INFO:root:Running T2 checks for proposal 7350b286-a567-435b-b1cd-8fda3b062878
-INFO:root:Running T3 checks for proposal 7350b286-a567-435b-b1cd-8fda3b062878
-INFO:root:Validating causal chain for proposal 7350b286-a567-435b-b1cd-8fda3b062878
-ERROR:root:Causal chain validation failed: Artifact 697b3a83-949e-4ac6-a799-f237a9729f18 not found.
-INFO:root:Saved audit_0f92b0d6-b6ca-4de1-94a0-4a1ded38e88c.json to local storage.
-INFO:root:Stored audit artifact audit_0f92b0d6-b6ca-4de1-94a0-4a1ded38e88c.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_0f92b0d6-b6ca-4de1-94a0-4a1ded38e88c.json with checksum abb94d035c5207c641a53c2cd9b4d14671d21beecca20c6cd8282f949ffaf87a
-INFO:root:Published verdict 0f92b0d6-b6ca-4de1-94a0-4a1ded38e88c for proposal 7350b286-a567-435b-b1cd-8fda3b062878.
-INFO:root:  - Audit Verdict: ALLOW_WITH_RESTRICTION
-INFO:root:Step 5: Routing through hardened execution boundary...
-INFO:root:Attempting to execute trade for BTC/USDT | Proposal: 7350b286-a567-435b-b1cd-8fda3b062878
-INFO:root:Placing buy order for 0.0025 BTC/USDT at price 83788.48
-INFO:root:Order 7350b286-a567-435b-b1cd-8fda3b062878-1769880071 placed successfully.
-INFO:root:✓ Trade successfully routed to OrderManager
-INFO:root:Subscribed to proposal 7350b286-a567-435b-b1cd-8fda3b062878 from the persistent event bus.
-INFO:root:Auditing proposal 7350b286-a567-435b-b1cd-8fda3b062878
-INFO:root:Running T1 checks for proposal 7350b286-a567-435b-b1cd-8fda3b062878
-INFO:root:Running T2 checks for proposal 7350b286-a567-435b-b1cd-8fda3b062878
-INFO:root:Running T3 checks for proposal 7350b286-a567-435b-b1cd-8fda3b062878
-INFO:root:Validating causal chain for proposal 7350b286-a567-435b-b1cd-8fda3b062878
-ERROR:root:Causal chain validation failed: Artifact 697b3a83-949e-4ac6-a799-f237a9729f18 not found.
-INFO:root:Saved audit_6f46f486-8cba-4062-93c4-1fde631d50e8.json to local storage.
-INFO:root:Stored audit artifact audit_6f46f486-8cba-4062-93c4-1fde631d50e8.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_6f46f486-8cba-4062-93c4-1fde631d50e8.json with checksum f0b5522153c97671df4b7bcf3e0ef3331c74cd735cc299cfce7222e660a5a6cf
-INFO:root:Published verdict 6f46f486-8cba-4062-93c4-1fde631d50e8 for proposal 7350b286-a567-435b-b1cd-8fda3b062878.
+INFO:root:Published proposal f45400c2-fd11-4c93-9218-5f7a5f49f99a to the persistent event bus.
+INFO:root:Published proposal f45400c2-fd11-4c93-9218-5f7a5f49f99a: HOLD
+INFO:root:Saved f45400c2-fd11-4c93-9218-5f7a5f49f99a to local storage.
+INFO:root:Subscribed to proposal 0e3f1afd-31df-4e81-9697-2aa596c0d03f from the persistent event bus.
+ERROR:root:Timeout waiting for audit verdict for proposal f45400c2-fd11-4c93-9218-5f7a5f49f99a
 INFO:root:
-ITERATION 3 - 2026-01-31 17:22:11
+ITERATION 3 - 2026-01-31 17:44:18
 INFO:root:Step 1: Ingesting live market data...
-INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:22:11.589208 to 2026-01-31T17:22:11.589208
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:44:18.563147 to 2026-01-31T17:44:18.563147
 /home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
   if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
 INFO:root:Step 2: Generating signals from indicators...
@@ -162,37 +133,22 @@ INFO:root:Retrieving candles for BTC/USDT from None to None
 INFO:root:  - Latest Price: 83788.48
 INFO:root:  - Signal: 1 (Score: 2.20)
 INFO:root:✓ BUY SIGNAL DETECTED
-INFO:root:Published proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d to the persistent event bus.
-INFO:root:Published proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d: HOLD
-INFO:root:Auditing proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
-INFO:root:Running T1 checks for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
-INFO:root:Running T2 checks for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
-INFO:root:Running T3 checks for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
-INFO:root:Validating causal chain for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
-ERROR:root:Causal chain validation failed: Artifact 7350b286-a567-435b-b1cd-8fda3b062878 not found.
-INFO:root:Saved audit_726d1bb6-cc87-46cc-b3ac-760f09f1fda8.json to local storage.
-INFO:root:Stored audit artifact audit_726d1bb6-cc87-46cc-b3ac-760f09f1fda8.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_726d1bb6-cc87-46cc-b3ac-760f09f1fda8.json with checksum 5d853581727be46582da7ec5360b8bdc17935dbc21e4325af904b1ffdd6af2cf
-INFO:root:Published verdict 726d1bb6-cc87-46cc-b3ac-760f09f1fda8 for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d.
-INFO:root:  - Audit Verdict: ALLOW_WITH_RESTRICTION
-INFO:root:Step 5: Routing through hardened execution boundary...
-INFO:root:Attempting to execute trade for BTC/USDT | Proposal: ac2fecac-2948-4f2d-8d4b-5499a1afba4d
-INFO:root:Placing buy order for 0.0025 BTC/USDT at price 83788.48
-INFO:root:Order ac2fecac-2948-4f2d-8d4b-5499a1afba4d-1769880132 placed successfully.
-INFO:root:✓ Trade successfully routed to OrderManager
-INFO:root:Subscribed to proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d from the persistent event bus.
-INFO:root:Auditing proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
-INFO:root:Running T1 checks for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
-INFO:root:Running T2 checks for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
-INFO:root:Running T3 checks for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
-INFO:root:Validating causal chain for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d
-ERROR:root:Causal chain validation failed: Artifact 7350b286-a567-435b-b1cd-8fda3b062878 not found.
-INFO:root:Saved audit_c6f3eada-a837-4df3-89b5-2cae5a518354.json to local storage.
-INFO:root:Stored audit artifact audit_c6f3eada-a837-4df3-89b5-2cae5a518354.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_c6f3eada-a837-4df3-89b5-2cae5a518354.json with checksum 1ecf55df5810d86a26d86072c45ae1d3e70809e647f5f9a8420d877de52bc4ef
-INFO:root:Published verdict c6f3eada-a837-4df3-89b5-2cae5a518354 for proposal ac2fecac-2948-4f2d-8d4b-5499a1afba4d.
+INFO:root:Published proposal 3e65dc75-ad7c-48c3-aae8-542724c41d80 to the persistent event bus.
+INFO:root:Published proposal 3e65dc75-ad7c-48c3-aae8-542724c41d80: HOLD
+INFO:root:Saved 3e65dc75-ad7c-48c3-aae8-542724c41d80 to local storage.
+ERROR:root:Error in audit listener loop: Timed out waiting for event artifact_created
+Traceback (most recent call last):
+  File "/home/user/silver-train/strategy_optimizer/src/audit/audit_layer.py", line 95, in listen_for_proposals
+    self.event_bus.wait_for_event("artifact_created")
+  File "/home/user/silver-train/strategy_optimizer/src/data_bus/event_bus.py", line 138, in wait_for_event
+    raise TimeoutError(f"Timed out waiting for event {event_name}")
+TimeoutError: Timed out waiting for event artifact_created
+INFO:root:Subscribed to proposal 2fa3d0bf-2180-4574-a5f0-4d842c51ec87 from the persistent event bus.
+ERROR:root:Timeout waiting for audit verdict for proposal 3e65dc75-ad7c-48c3-aae8-542724c41d80
 INFO:root:
-ITERATION 4 - 2026-01-31 17:23:12
+ITERATION 4 - 2026-01-31 17:44:29
 INFO:root:Step 1: Ingesting live market data...
-INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:23:12.416302 to 2026-01-31T17:23:12.416302
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:44:29.374595 to 2026-01-31T17:44:29.374595
 /home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
   if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
 INFO:root:Step 2: Generating signals from indicators...
@@ -204,37 +160,48 @@ INFO:root:Retrieving candles for BTC/USDT from None to None
 INFO:root:  - Latest Price: 83788.48
 INFO:root:  - Signal: 1 (Score: 2.20)
 INFO:root:✓ BUY SIGNAL DETECTED
-INFO:root:Published proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b to the persistent event bus.
-INFO:root:Published proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b: HOLD
-INFO:root:Auditing proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
-INFO:root:Running T1 checks for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
-INFO:root:Running T2 checks for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
-INFO:root:Running T3 checks for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
-INFO:root:Validating causal chain for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
-ERROR:root:Causal chain validation failed: Artifact ac2fecac-2948-4f2d-8d4b-5499a1afba4d not found.
-INFO:root:Saved audit_525a54d2-72bc-45ea-bf78-dc1ae6652ed1.json to local storage.
-INFO:root:Stored audit artifact audit_525a54d2-72bc-45ea-bf78-dc1ae6652ed1.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_525a54d2-72bc-45ea-bf78-dc1ae6652ed1.json with checksum a97817e2cc6177a98c7c7d01e9877a4057fe084c6b3ac4ba76ad2776a58ae092
-INFO:root:Published verdict 525a54d2-72bc-45ea-bf78-dc1ae6652ed1 for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b.
-INFO:root:  - Audit Verdict: ALLOW_WITH_RESTRICTION
-INFO:root:Step 5: Routing through hardened execution boundary...
-INFO:root:Attempting to execute trade for BTC/USDT | Proposal: ebf2dcc0-0146-41ee-bf7a-7737a148f26b
-INFO:root:Placing buy order for 0.0025 BTC/USDT at price 83788.48
-INFO:root:Order ebf2dcc0-0146-41ee-bf7a-7737a148f26b-1769880193 placed successfully.
-INFO:root:✓ Trade successfully routed to OrderManager
-INFO:root:Subscribed to proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b from the persistent event bus.
-INFO:root:Auditing proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
-INFO:root:Running T1 checks for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
-INFO:root:Running T2 checks for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
-INFO:root:Running T3 checks for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
-INFO:root:Validating causal chain for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b
-ERROR:root:Causal chain validation failed: Artifact ac2fecac-2948-4f2d-8d4b-5499a1afba4d not found.
-INFO:root:Saved audit_6e83ad29-01e3-4a27-8cd5-f849d619f46c.json to local storage.
-INFO:root:Stored audit artifact audit_6e83ad29-01e3-4a27-8cd5-f849d619f46c.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_6e83ad29-01e3-4a27-8cd5-f849d619f46c.json with checksum fe85c4560e9488389078045b63d4eecce75dd2eca435c57ab6b4a896706aea0d
-INFO:root:Published verdict 6e83ad29-01e3-4a27-8cd5-f849d619f46c for proposal ebf2dcc0-0146-41ee-bf7a-7737a148f26b.
+INFO:root:Published proposal c2a45630-e4c9-47e5-8ef4-c79660ca8e38 to the persistent event bus.
+INFO:root:Published proposal c2a45630-e4c9-47e5-8ef4-c79660ca8e38: HOLD
+INFO:root:Saved c2a45630-e4c9-47e5-8ef4-c79660ca8e38 to local storage.
+ERROR:root:Error in audit listener loop: Timed out waiting for event artifact_created
+Traceback (most recent call last):
+  File "/home/user/silver-train/strategy_optimizer/src/audit/audit_layer.py", line 95, in listen_for_proposals
+    self.event_bus.wait_for_event("artifact_created")
+  File "/home/user/silver-train/strategy_optimizer/src/data_bus/event_bus.py", line 138, in wait_for_event
+    raise TimeoutError(f"Timed out waiting for event {event_name}")
+TimeoutError: Timed out waiting for event artifact_created
+ERROR:root:Timeout waiting for audit verdict for proposal c2a45630-e4c9-47e5-8ef4-c79660ca8e38
 INFO:root:
-ITERATION 5 - 2026-01-31 17:24:13
+ITERATION 5 - 2026-01-31 17:44:40
 INFO:root:Step 1: Ingesting live market data...
-INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:24:13.269046 to 2026-01-31T17:24:13.269046
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:44:40.212339 to 2026-01-31T17:44:40.212339
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Step 2: Generating signals from indicators...
+INFO:root:Generating signals for BTC/USDT with params: {'min_score': 1.0, 'rsi_oversold': 30, 'rsi_overbought': 70, 'stop_multiplier': 2.0, 'target_multiplier': 2.0, 'risk_pct': 1.0}
+INFO:root:Computing all indicators for BTC/USDT from None to None
+INFO:root:Retrieving candles for BTC/USDT from None to None
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Subscribed to proposal f45400c2-fd11-4c93-9218-5f7a5f49f99a from the persistent event bus.
+INFO:root:  - Latest Price: 83788.48
+INFO:root:  - Signal: 1 (Score: 2.20)
+INFO:root:✓ BUY SIGNAL DETECTED
+INFO:root:Published proposal aa843a03-70a3-473b-96de-df4ade9302eb to the persistent event bus.
+INFO:root:Published proposal aa843a03-70a3-473b-96de-df4ade9302eb: HOLD
+INFO:root:Saved aa843a03-70a3-473b-96de-df4ade9302eb to local storage.
+ERROR:root:Error in audit listener loop: Timed out waiting for event artifact_created
+Traceback (most recent call last):
+  File "/home/user/silver-train/strategy_optimizer/src/audit/audit_layer.py", line 95, in listen_for_proposals
+    self.event_bus.wait_for_event("artifact_created")
+  File "/home/user/silver-train/strategy_optimizer/src/data_bus/event_bus.py", line 138, in wait_for_event
+    raise TimeoutError(f"Timed out waiting for event {event_name}")
+TimeoutError: Timed out waiting for event artifact_created
+ERROR:root:Timeout waiting for audit verdict for proposal aa843a03-70a3-473b-96de-df4ade9302eb
+INFO:root:
+ITERATION 6 - 2026-01-31 17:44:51
+INFO:root:Step 1: Ingesting live market data...
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:44:51.081959 to 2026-01-31T17:44:51.081959
 /home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
   if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
 INFO:root:Step 2: Generating signals from indicators...
@@ -246,30 +213,206 @@ INFO:root:Retrieving candles for BTC/USDT from None to None
 INFO:root:  - Latest Price: 83788.48
 INFO:root:  - Signal: 1 (Score: 2.20)
 INFO:root:✓ BUY SIGNAL DETECTED
-INFO:root:Published proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5 to the persistent event bus.
-INFO:root:Published proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5: HOLD
-INFO:root:Auditing proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
-INFO:root:Running T1 checks for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
-INFO:root:Running T2 checks for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
-INFO:root:Running T3 checks for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
-INFO:root:Validating causal chain for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
-ERROR:root:Causal chain validation failed: Artifact ebf2dcc0-0146-41ee-bf7a-7737a148f26b not found.
-INFO:root:Saved audit_1a185fc5-27e9-475d-9b8d-2c597b342ff8.json to local storage.
-INFO:root:Stored audit artifact audit_1a185fc5-27e9-475d-9b8d-2c597b342ff8.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_1a185fc5-27e9-475d-9b8d-2c597b342ff8.json with checksum c12aed09a88989837274edc147e349b597a98f3b72e41d829222d480de9d6f4d
-INFO:root:Published verdict 1a185fc5-27e9-475d-9b8d-2c597b342ff8 for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5.
-INFO:root:  - Audit Verdict: ALLOW_WITH_RESTRICTION
-INFO:root:Step 5: Routing through hardened execution boundary...
-INFO:root:Attempting to execute trade for BTC/USDT | Proposal: 54a785dc-dc51-411b-bc60-68e9fd465cb5
-INFO:root:Placing buy order for 0.0025 BTC/USDT at price 83788.48
-INFO:root:Order 54a785dc-dc51-411b-bc60-68e9fd465cb5-1769880254 placed successfully.
-INFO:root:✓ Trade successfully routed to OrderManager
-INFO:root:Subscribed to proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5 from the persistent event bus.
-INFO:root:Auditing proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
-INFO:root:Running T1 checks for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
-INFO:root:Running T2 checks for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
-INFO:root:Running T3 checks for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
-INFO:root:Validating causal chain for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5
-ERROR:root:Causal chain validation failed: Artifact ebf2dcc0-0146-41ee-bf7a-7737a148f26b not found.
-INFO:root:Saved audit_0fd38065-3d41-480e-bf57-972c189a06c6.json to local storage.
-INFO:root:Stored audit artifact audit_0fd38065-3d41-480e-bf57-972c189a06c6.json at file:///home/user/silver-train/strategy_optimizer/data/artifacts/audit_0fd38065-3d41-480e-bf57-972c189a06c6.json with checksum ad97ca5ee14d731cbeee864be0a056d9d1971ed7aeac16c4dc846fd72b5a5009
-INFO:root:Published verdict 0fd38065-3d41-480e-bf57-972c189a06c6 for proposal 54a785dc-dc51-411b-bc60-68e9fd465cb5.
+INFO:root:Published proposal 077de7a9-96be-4e14-bb1c-fcb9de05c17c to the persistent event bus.
+INFO:root:Published proposal 077de7a9-96be-4e14-bb1c-fcb9de05c17c: HOLD
+INFO:root:Saved 077de7a9-96be-4e14-bb1c-fcb9de05c17c to local storage.
+INFO:root:Subscribed to proposal 3e65dc75-ad7c-48c3-aae8-542724c41d80 from the persistent event bus.
+ERROR:root:Timeout waiting for audit verdict for proposal 077de7a9-96be-4e14-bb1c-fcb9de05c17c
+INFO:root:
+ITERATION 7 - 2026-01-31 17:45:01
+INFO:root:Step 1: Ingesting live market data...
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:45:01.871352 to 2026-01-31T17:45:01.871352
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Step 2: Generating signals from indicators...
+INFO:root:Generating signals for BTC/USDT with params: {'min_score': 1.0, 'rsi_oversold': 30, 'rsi_overbought': 70, 'stop_multiplier': 2.0, 'target_multiplier': 2.0, 'risk_pct': 1.0}
+INFO:root:Computing all indicators for BTC/USDT from None to None
+INFO:root:Retrieving candles for BTC/USDT from None to None
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:  - Latest Price: 83788.48
+INFO:root:  - Signal: 1 (Score: 2.20)
+INFO:root:✓ BUY SIGNAL DETECTED
+INFO:root:Published proposal f738f149-cf3b-4676-b584-bb14d5d2a9a0 to the persistent event bus.
+INFO:root:Published proposal f738f149-cf3b-4676-b584-bb14d5d2a9a0: HOLD
+INFO:root:Saved f738f149-cf3b-4676-b584-bb14d5d2a9a0 to local storage.
+ERROR:root:Error in audit listener loop: Timed out waiting for event artifact_created
+Traceback (most recent call last):
+  File "/home/user/silver-train/strategy_optimizer/src/audit/audit_layer.py", line 95, in listen_for_proposals
+    self.event_bus.wait_for_event("artifact_created")
+  File "/home/user/silver-train/strategy_optimizer/src/data_bus/event_bus.py", line 138, in wait_for_event
+    raise TimeoutError(f"Timed out waiting for event {event_name}")
+TimeoutError: Timed out waiting for event artifact_created
+INFO:root:Subscribed to proposal c2a45630-e4c9-47e5-8ef4-c79660ca8e38 from the persistent event bus.
+ERROR:root:Timeout waiting for audit verdict for proposal f738f149-cf3b-4676-b584-bb14d5d2a9a0
+INFO:root:
+ITERATION 8 - 2026-01-31 17:45:13
+INFO:root:Step 1: Ingesting live market data...
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:45:13.219882 to 2026-01-31T17:45:13.219882
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Step 2: Generating signals from indicators...
+INFO:root:Generating signals for BTC/USDT with params: {'min_score': 1.0, 'rsi_oversold': 30, 'rsi_overbought': 70, 'stop_multiplier': 2.0, 'target_multiplier': 2.0, 'risk_pct': 1.0}
+INFO:root:Computing all indicators for BTC/USDT from None to None
+INFO:root:Retrieving candles for BTC/USDT from None to None
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:  - Latest Price: 83788.48
+INFO:root:  - Signal: 1 (Score: 2.20)
+INFO:root:✓ BUY SIGNAL DETECTED
+INFO:root:Published proposal 13abae71-e15a-40d2-b80c-301e71eb88fc to the persistent event bus.
+INFO:root:Published proposal 13abae71-e15a-40d2-b80c-301e71eb88fc: HOLD
+INFO:root:Saved 13abae71-e15a-40d2-b80c-301e71eb88fc to local storage.
+ERROR:root:Error in audit listener loop: Timed out waiting for event artifact_created
+Traceback (most recent call last):
+  File "/home/user/silver-train/strategy_optimizer/src/audit/audit_layer.py", line 95, in listen_for_proposals
+    self.event_bus.wait_for_event("artifact_created")
+  File "/home/user/silver-train/strategy_optimizer/src/data_bus/event_bus.py", line 138, in wait_for_event
+    raise TimeoutError(f"Timed out waiting for event {event_name}")
+TimeoutError: Timed out waiting for event artifact_created
+ERROR:root:Timeout waiting for audit verdict for proposal 13abae71-e15a-40d2-b80c-301e71eb88fc
+INFO:root:
+ITERATION 9 - 2026-01-31 17:45:24
+INFO:root:Step 1: Ingesting live market data...
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:45:24.470539 to 2026-01-31T17:45:24.470539
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Step 2: Generating signals from indicators...
+INFO:root:Generating signals for BTC/USDT with params: {'min_score': 1.0, 'rsi_oversold': 30, 'rsi_overbought': 70, 'stop_multiplier': 2.0, 'target_multiplier': 2.0, 'risk_pct': 1.0}
+INFO:root:Computing all indicators for BTC/USDT from None to None
+INFO:root:Retrieving candles for BTC/USDT from None to None
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:  - Latest Price: 83788.48
+INFO:root:  - Signal: 1 (Score: 2.20)
+INFO:root:✓ BUY SIGNAL DETECTED
+INFO:root:Published proposal a6b9bf45-c2a8-4bf8-ab6a-175f91b2f6d6 to the persistent event bus.
+INFO:root:Published proposal a6b9bf45-c2a8-4bf8-ab6a-175f91b2f6d6: HOLD
+INFO:root:Saved a6b9bf45-c2a8-4bf8-ab6a-175f91b2f6d6 to local storage.
+INFO:root:Subscribed to proposal aa843a03-70a3-473b-96de-df4ade9302eb from the persistent event bus.
+ERROR:root:Timeout waiting for audit verdict for proposal a6b9bf45-c2a8-4bf8-ab6a-175f91b2f6d6
+INFO:root:
+ITERATION 10 - 2026-01-31 17:45:35
+INFO:root:Step 1: Ingesting live market data...
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:45:35.233369 to 2026-01-31T17:45:35.233369
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Step 2: Generating signals from indicators...
+INFO:root:Generating signals for BTC/USDT with params: {'min_score': 1.0, 'rsi_oversold': 30, 'rsi_overbought': 70, 'stop_multiplier': 2.0, 'target_multiplier': 2.0, 'risk_pct': 1.0}
+INFO:root:Computing all indicators for BTC/USDT from None to None
+INFO:root:Retrieving candles for BTC/USDT from None to None
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+ERROR:root:Error in audit listener loop: Timed out waiting for event artifact_created
+Traceback (most recent call last):
+  File "/home/user/silver-train/strategy_optimizer/src/audit/audit_layer.py", line 95, in listen_for_proposals
+    self.event_bus.wait_for_event("artifact_created")
+  File "/home/user/silver-train/strategy_optimizer/src/data_bus/event_bus.py", line 138, in wait_for_event
+    raise TimeoutError(f"Timed out waiting for event {event_name}")
+TimeoutError: Timed out waiting for event artifact_created
+INFO:root:  - Latest Price: 83788.48
+INFO:root:  - Signal: 1 (Score: 2.20)
+INFO:root:✓ BUY SIGNAL DETECTED
+INFO:root:Published proposal 86d65729-52d6-43fa-b439-444264b40314 to the persistent event bus.
+INFO:root:Published proposal 86d65729-52d6-43fa-b439-444264b40314: HOLD
+INFO:root:Saved 86d65729-52d6-43fa-b439-444264b40314 to local storage.
+INFO:root:Subscribed to proposal 077de7a9-96be-4e14-bb1c-fcb9de05c17c from the persistent event bus.
+ERROR:root:Timeout waiting for audit verdict for proposal 86d65729-52d6-43fa-b439-444264b40314
+INFO:root:
+ITERATION 11 - 2026-01-31 17:45:46
+INFO:root:Step 1: Ingesting live market data...
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:45:46.056217 to 2026-01-31T17:45:46.056217
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Step 2: Generating signals from indicators...
+INFO:root:Generating signals for BTC/USDT with params: {'min_score': 1.0, 'rsi_oversold': 30, 'rsi_overbought': 70, 'stop_multiplier': 2.0, 'target_multiplier': 2.0, 'risk_pct': 1.0}
+INFO:root:Computing all indicators for BTC/USDT from None to None
+INFO:root:Retrieving candles for BTC/USDT from None to None
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:  - Latest Price: 83788.48
+INFO:root:  - Signal: 1 (Score: 2.20)
+INFO:root:✓ BUY SIGNAL DETECTED
+INFO:root:Published proposal 0f1b6634-e041-4e03-acf6-9a3345381ff2 to the persistent event bus.
+INFO:root:Published proposal 0f1b6634-e041-4e03-acf6-9a3345381ff2: HOLD
+INFO:root:Saved 0f1b6634-e041-4e03-acf6-9a3345381ff2 to local storage.
+ERROR:root:Error in audit listener loop: Timed out waiting for event artifact_created
+Traceback (most recent call last):
+  File "/home/user/silver-train/strategy_optimizer/src/audit/audit_layer.py", line 95, in listen_for_proposals
+    self.event_bus.wait_for_event("artifact_created")
+  File "/home/user/silver-train/strategy_optimizer/src/data_bus/event_bus.py", line 138, in wait_for_event
+    raise TimeoutError(f"Timed out waiting for event {event_name}")
+TimeoutError: Timed out waiting for event artifact_created
+INFO:root:Subscribed to proposal f738f149-cf3b-4676-b584-bb14d5d2a9a0 from the persistent event bus.
+ERROR:root:Timeout waiting for audit verdict for proposal 0f1b6634-e041-4e03-acf6-9a3345381ff2
+INFO:root:
+ITERATION 12 - 2026-01-31 17:45:57
+INFO:root:Step 1: Ingesting live market data...
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:45:57.464214 to 2026-01-31T17:45:57.464214
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Step 2: Generating signals from indicators...
+INFO:root:Generating signals for BTC/USDT with params: {'min_score': 1.0, 'rsi_oversold': 30, 'rsi_overbought': 70, 'stop_multiplier': 2.0, 'target_multiplier': 2.0, 'risk_pct': 1.0}
+INFO:root:Computing all indicators for BTC/USDT from None to None
+INFO:root:Retrieving candles for BTC/USDT from None to None
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:  - Latest Price: 83788.48
+INFO:root:  - Signal: 1 (Score: 2.20)
+INFO:root:✓ BUY SIGNAL DETECTED
+INFO:root:Published proposal 56a4be2e-addd-47a1-a741-5fbc1fa95c6c to the persistent event bus.
+INFO:root:Published proposal 56a4be2e-addd-47a1-a741-5fbc1fa95c6c: HOLD
+INFO:root:Saved 56a4be2e-addd-47a1-a741-5fbc1fa95c6c to local storage.
+ERROR:root:Error in audit listener loop: Timed out waiting for event artifact_created
+Traceback (most recent call last):
+  File "/home/user/silver-train/strategy_optimizer/src/audit/audit_layer.py", line 95, in listen_for_proposals
+    self.event_bus.wait_for_event("artifact_created")
+  File "/home/user/silver-train/strategy_optimizer/src/data_bus/event_bus.py", line 138, in wait_for_event
+    raise TimeoutError(f"Timed out waiting for event {event_name}")
+TimeoutError: Timed out waiting for event artifact_created
+ERROR:root:Timeout waiting for audit verdict for proposal 56a4be2e-addd-47a1-a741-5fbc1fa95c6c
+INFO:root:
+ITERATION 13 - 2026-01-31 17:46:08
+INFO:root:Step 1: Ingesting live market data...
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:46:08.801490 to 2026-01-31T17:46:08.801490
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Step 2: Generating signals from indicators...
+INFO:root:Generating signals for BTC/USDT with params: {'min_score': 1.0, 'rsi_oversold': 30, 'rsi_overbought': 70, 'stop_multiplier': 2.0, 'target_multiplier': 2.0, 'risk_pct': 1.0}
+INFO:root:Computing all indicators for BTC/USDT from None to None
+INFO:root:Retrieving candles for BTC/USDT from None to None
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:  - Latest Price: 83788.48
+INFO:root:  - Signal: 1 (Score: 2.20)
+INFO:root:✓ BUY SIGNAL DETECTED
+INFO:root:Published proposal d8a311fb-49ac-403e-a3ca-a8ea35d85625 to the persistent event bus.
+INFO:root:Published proposal d8a311fb-49ac-403e-a3ca-a8ea35d85625: HOLD
+INFO:root:Saved d8a311fb-49ac-403e-a3ca-a8ea35d85625 to local storage.
+INFO:root:Subscribed to proposal 13abae71-e15a-40d2-b80c-301e71eb88fc from the persistent event bus.
+ERROR:root:Timeout waiting for audit verdict for proposal d8a311fb-49ac-403e-a3ca-a8ea35d85625
+INFO:root:
+ITERATION 14 - 2026-01-31 17:46:20
+INFO:root:Step 1: Ingesting live market data...
+INFO:root:Retrieving candles for BTC/USDT from 2026-01-30T17:46:20.327782 to 2026-01-31T17:46:20.327782
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+INFO:root:Step 2: Generating signals from indicators...
+INFO:root:Generating signals for BTC/USDT with params: {'min_score': 1.0, 'rsi_oversold': 30, 'rsi_overbought': 70, 'stop_multiplier': 2.0, 'target_multiplier': 2.0, 'risk_pct': 1.0}
+INFO:root:Computing all indicators for BTC/USDT from None to None
+INFO:root:Retrieving candles for BTC/USDT from None to None
+/home/user/silver-train/strategy_optimizer/src/data_bus/market_data_bus.py:111: FutureWarning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+  if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+ERROR:root:Error in audit listener loop: Timed out waiting for event artifact_created
+Traceback (most recent call last):
+  File "/home/user/silver-train/strategy_optimizer/src/audit/audit_layer.py", line 95, in listen_for_proposals
+    self.event_bus.wait_for_event("artifact_created")
+  File "/home/user/silver-train/strategy_optimizer/src/data_bus/event_bus.py", line 138, in wait_for_event
+    raise TimeoutError(f"Timed out waiting for event {event_name}")
+TimeoutError: Timed out waiting for event artifact_created
+INFO:root:  - Latest Price: 83788.48
+INFO:root:  - Signal: 1 (Score: 2.20)
+INFO:root:✓ BUY SIGNAL DETECTED
+INFO:root:Published proposal 09abf139-893e-4f4a-ab7a-30749158de1a to the persistent event bus.
+INFO:root:Published proposal 09abf139-893e-4f4a-ab7a-30749158de1a: HOLD
+INFO:root:Saved 09abf139-893e-4f4a-ab7a-30749158de1a to local storage.

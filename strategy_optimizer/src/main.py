@@ -1,4 +1,3 @@
-
 import yaml
 import logging
 import threading
@@ -49,7 +48,8 @@ from governance.restriction_enforcer import RestrictionEnforcer
 from governance.emergency_manager import EmergencyManager
 from governance.kill_switch import KillSwitch
 from optimizer.stability_guards import StabilityGuards
-from monitoring.cli_dashboard import CLIDashboard
+from monitoring.dashboard_server import DashboardServer
+from monitoring.metrics_collector import MetricsCollector
 from backtesting.portfolio_state import PortfolioState
 from processors.data_bootstrap_validator import DataBootstrapValidator
 
@@ -182,6 +182,10 @@ def main():
     artifact_store = ArtifactStore(config, artifact_manager, crypto_utils)
     audit_layer = AuditLayer(config, event_bus, t1_checks, t2_checks, t3_checks, audit_causal_validator, artifact_store)
     
+    # Monitoring
+    metrics_collector = MetricsCollector(state_manager, performance_metrics)
+    dashboard_server = DashboardServer(config, state_manager, artifact_manager, incident_tracker, metrics_collector)
+
     # Execution & Governance
     order_manager = OrderManager(config, adapter, state_manager)
     execution_engine = ExecutionEngine(config, order_manager, state_manager, portfolio)
@@ -194,6 +198,11 @@ def main():
     audit_thread = threading.Thread(target=audit_layer.listen_for_proposals, daemon=True)
     audit_thread.start()
     logging.info("Audit layer started in a background thread.")
+    
+    # Start DashboardServer in a background thread
+    dashboard_thread = threading.Thread(target=dashboard_server.start, daemon=True)
+    dashboard_thread.start()
+    logging.info("Dashboard server started in a background thread.")
 
     # 4. Main orchestration loop (MVTP - Live Trading Flow)
     symbol = 'BTC/USDT'
@@ -257,7 +266,25 @@ def main():
 
                 # 4. Audit & Governance
                 proposal = strategy_optimizer.publish_proposal(current_params, 'HOLD')
-                verdict = audit_layer.audit_proposal(proposal)
+                
+                # Store the proposal artifact so the next audit can find it
+                artifact_manager.upload_artifact(
+                    artifact_id=proposal.proposal_id,
+                    data=proposal.json()
+                )
+
+                # Wait for the audit to complete
+                verdict = None
+                for _ in range(10):
+                    verdict = event_bus.subscribe_verdict(proposal.proposal_id)
+                    if verdict:
+                        break
+                    time.sleep(1)
+
+                if not verdict:
+                    logging.error(f"Timeout waiting for audit verdict for proposal {proposal.proposal_id}")
+                    continue
+
                 logging.info(f"  - Audit Verdict: {verdict.action.type}")
 
                 # 5. Place Trade via Hardened Boundary

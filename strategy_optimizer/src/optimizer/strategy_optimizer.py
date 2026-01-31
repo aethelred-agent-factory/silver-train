@@ -145,15 +145,6 @@ Suggest parameter adjustments or hold current parameters."""
         """
         Publishes a parameter proposal to the event bus.
         """
-        causal_refs = []
-        if self.previous_proposal_id:
-            causal_refs.append(CausalChainRef(id=self.previous_proposal_id, type="OptimizerProposal"))
-
-        # Correctly add the latest audit verdict to the causal chain
-        latest_verdict = self.event_bus.get_latest_verdict()  # Assumes EventBus has this method
-        if latest_verdict:
-            causal_refs.append(CausalChainRef(id=latest_verdict.audit_id, type="AuditVerdict"))
-
         proposal = OptimizerProposal(
             proposal_version=self.proposal_version,
             source="StrategyOptimizer_v2",
@@ -162,7 +153,7 @@ Suggest parameter adjustments or hold current parameters."""
                 "action": action,
                 "timestamp": datetime.now().isoformat()
             },
-            causal_chain_refs=causal_refs
+            causal_chain_refs=[]
         )
         
         if self.event_bus:

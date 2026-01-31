@@ -4,20 +4,18 @@ import uvicorn
 import logging
 from typing import List
 
-# from storage.state_manager import StateManager
-# from storage.artifact_manager import ArtifactManager
-# from governance.incident_tracker import IncidentTracker
-# from data_bus.schemas import AuditVerdict, OptimizerProposal
+from .metrics_collector import MetricsCollector
 
 class DashboardServer:
     """
     FastAPI web dashboard to display system status, metrics, incidents, and audit artifacts.
     """
-    def __init__(self, config, state_manager, artifact_manager, incident_tracker):
+    def __init__(self, config, state_manager, artifact_manager, incident_tracker, metrics_collector: MetricsCollector):
         self.config = config
         self.state_manager = state_manager
         self.artifact_manager = artifact_manager
         self.incident_tracker = incident_tracker
+        self.metrics_collector = metrics_collector
         self.app = FastAPI(title="Strategy Optimizer Dashboard")
         self.port = self.config['system_config']['monitoring']['dashboard_port']
 
@@ -46,8 +44,8 @@ class DashboardServer:
         
         @self.app.get("/metrics")
         async def get_metrics():
-            # Placeholder for actual metrics from metrics_collector
-            return {"status": "ok", "equity": 100000, "drawdown": 5.2, "t1_flags": 0}
+            metrics = self.metrics_collector.get_latest_metrics()
+            return {"status": "ok", **metrics}
 
         @self.app.get("/incidents")
         async def get_incidents():

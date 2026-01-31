@@ -1,4 +1,5 @@
 import logging
+import time
 from typing import Optional
 from data_bus.schemas import OptimizerProposal, AuditVerdict
 from storage.state_manager import StateManager
@@ -33,6 +34,13 @@ class EventBus:
                 proposal_id TEXT NOT NULL,
                 payload TEXT NOT NULL,
                 status TEXT NOT NULL DEFAULT 'pending',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+        self.state_manager.execute_query("""
+            CREATE TABLE IF NOT EXISTS event_bus_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                event_name TEXT NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             );
         """)
@@ -111,3 +119,21 @@ class EventBus:
         payload = result[0]
         verdict = AuditVerdict.parse_raw(payload)
         return verdict
+
+    def publish_event(self, event_name: str):
+        """Publishes a generic event to the event bus."""
+        query = "INSERT INTO event_bus_events (event_name) VALUES (?)"
+        self.state_manager.execute_query(query, (event_name,))
+        logging.info(f"Published event {event_name} to the persistent event bus.")
+
+    def wait_for_event(self, event_name: str, timeout: int = 10):
+        """Waits for a specific event to be published."""
+        start_time = time.time()
+        while True:
+            query = "SELECT id FROM event_bus_events WHERE event_name = ?"
+            result = self.state_manager.execute_query(query, (event_name,), fetch='one')
+            if result:
+                return
+            if time.time() - start_time > timeout:
+                raise TimeoutError(f"Timed out waiting for event {event_name}")
+            time.sleep(1)
