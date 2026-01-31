@@ -1,0 +1,757 @@
+.........................FF.............FF...FFFF....................... [ 48%]
+........FFFFF...........F.F.FFF....F..............F..................... [ 96%]
+......                                                                   [100%]
+=================================== FAILURES ===================================
+______________________________ test_run_backtest _______________________________
+
+backtest_engine = <src.backtesting.backtest_engine.BacktestEngine object at 0x7f39de975610>
+
+    def test_run_backtest(backtest_engine):
+        symbol = 'TEST/USDT'
+        start = '2023-01-01T00:00:00Z'
+        end = '2023-01-02T23:00:00Z'
+        params = {"risk_pct": 1.0, "stop_multiplier": 2.0}
+
+        result = backtest_engine.run_backtest(symbol, start, end, params)
+
+>       assert isinstance(result, BacktestResult)
+E       AssertionError: assert False
+E        +  where False = isinstance(BacktestResult(start_date=Timestamp('2023-01-01 00:00:00+0000', tz='UTC'), end_date=Timestamp('2023-01-02 23:00:00+000...p.float64(11.0), 'return_pct': np.float64(0.11)}}, parameter_hash='66910ba8', total_return_pct=0.0, avg_r_multiple=0.0), BacktestResult)
+
+stradegy_optimizer/tests/test_backtesting/test_backtest_engine.py:59: AssertionError
+_____________________________ test_rapid_backtest ______________________________
+
+backtest_engine = <src.backtesting.backtest_engine.BacktestEngine object at 0x7f39de999850>
+
+    def test_rapid_backtest(backtest_engine):
+        symbol = 'TEST/USDT'
+        end = '2023-01-02T23:00:00Z'
+        params = {"risk_pct": 1.0, "stop_multiplier": 2.0}
+
+        result = backtest_engine.rapid_backtest(symbol, end, params, window_days=1)
+
+>       assert isinstance(result, BacktestResult)
+E       AssertionError: assert False
+E        +  where False = isinstance(BacktestResult(start_date=Timestamp('2023-01-01 23:00:00+0000', tz='UTC'), end_date=Timestamp('2023-01-02 23:00:00+000...p.float64(11.0), 'return_pct': np.float64(0.11)}}, parameter_hash='66910ba8', total_return_pct=0.0, avg_r_multiple=0.0), BacktestResult)
+
+stradegy_optimizer/tests/test_backtesting/test_backtest_engine.py:71: AssertionError
+_____________________________ test_ingest_candles ______________________________
+
+mock_market_data_bus = <src.data_bus.market_data_bus.MarketDataBus object at 0x7f39de9995b0>
+
+    def test_ingest_candles(mock_market_data_bus):
+        symbol = 'BTC/USDT'
+        start = '2023-01-01T00:00:00Z'
+        end = '2023-01-01T23:00:00Z' # Only one batch of 10 candles will be fetched
+
+        mock_market_data_bus.ingest_candles(symbol, start, end)
+
+        df = mock_market_data_bus.get_candles(symbol, start, end)
+>       assert not df.empty
+E       assert not True
+E        +  where True = Empty DataFrame\nColumns: [timestamp, open, high, low, close, volume]\nIndex: [].empty
+
+stradegy_optimizer/tests/test_data_bus/test_market_data_bus.py:47: AssertionError
+_______________________________ test_get_candles _______________________________
+
+mock_market_data_bus = <src.data_bus.market_data_bus.MarketDataBus object at 0x7f399dd71e80>
+
+    def test_get_candles(mock_market_data_bus):
+        symbol = 'BTC/USDT'
+        start = '2023-01-01T00:00:00Z'
+        end = '2023-01-01T23:00:00Z'
+        mock_market_data_bus.ingest_candles(symbol, start, end)
+
+        df = mock_market_data_bus.get_candles(symbol, '2023-01-01T05:00:00Z', '2023-01-01T07:00:00Z')
+>       assert not df.empty
+E       assert not True
+E        +  where True = Empty DataFrame\nColumns: [timestamp, open, high, low, close, volume]\nIndex: [].empty
+
+stradegy_optimizer/tests/test_data_bus/test_market_data_bus.py:59: AssertionError
+_______________________________ test_fetch_ohlcv _______________________________
+
+self = <Mock name='mock.fetch_ohlcv' id='139886548297312'>
+args = ('BTC/USDT', '1h', None, None), kwargs = {}
+msg = "Expected 'fetch_ohlcv' to be called once. Called 0 times."
+
+    def assert_called_once_with(self, /, *args, **kwargs):
+        """assert that the mock was called exactly once and that that call was
+        with the specified arguments."""
+        if not self.call_count == 1:
+            msg = ("Expected '%s' to be called once. Called %s times.%s"
+                   % (self._mock_name or 'mock',
+                      self.call_count,
+                      self._calls_repr()))
+>           raise AssertionError(msg)
+E           AssertionError: Expected 'fetch_ohlcv' to be called once. Called 0 times.
+
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/unittest/mock.py:960: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+exchange_adapter = <src.execution.exchange_adapter.ExchangeAdapter object at 0x7f399dd317f0>
+mock_ccxt_exchange = <Mock spec='binance' id='139885437719888'>
+
+    def test_fetch_ohlcv(exchange_adapter, mock_ccxt_exchange):
+        symbol = 'BTC/USDT'
+        timeframe = '1h'
+        ohlcv = exchange_adapter.fetch_ohlcv(symbol, timeframe)
+        assert isinstance(ohlcv, list)
+        assert len(ohlcv) > 0
+>       mock_ccxt_exchange.fetch_ohlcv.assert_called_once_with(symbol, timeframe, None, None)
+E       AssertionError: Expected 'fetch_ohlcv' to be called once. Called 0 times.
+
+stradegy_optimizer/tests/test_execution/test_exchange_adapter.py:33: AssertionError
+______________________________ test_create_order _______________________________
+
+self = ccxt.phemex(), url = 'https://api.phemex.com/spot/orders'
+method = 'POST'
+headers = {'Content-Type': 'application/json;charset=UTF-8', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Date':...t (CloudFront)', 'X-Amz-Cf-Pop': 'ORD56-P7', 'X-Amz-Cf-Id': 'YimUs4pxdjPo4II4vX1WouYSq33ASOtTT-wtEXYzY6Zj2XGvNWzuUw=='}
+body = b'{"symbol":"sBTCUSDT","side":"Buy","ordType":"Market","clOrdID":"CCXT123456c179932c0d8603ec","qtyType":"ByBase","baseQtyEv":1000000}'
+
+    def fetch(self, url, method='GET', headers=None, body=None):
+        """Perform a HTTP request and return decoded JSON data"""
+
+        # ##### PROXY & HEADERS #####
+        request_headers = self.prepare_request_headers(headers)
+        # proxy-url
+        proxyUrl = self.check_proxy_url_settings(url, method, headers, body)
+        if proxyUrl is not None:
+            request_headers.update({'Origin': self.origin})
+            url = proxyUrl + self.url_encoder_for_proxy_url(url)
+        # proxy agents
+        proxies = None  # set default
+        httpProxy, httpsProxy, socksProxy = self.check_proxy_settings(url, method, headers, body)
+        if httpProxy:
+            proxies = {}
+            proxies['http'] = httpProxy
+        elif httpsProxy:
+            proxies = {}
+            proxies['https'] = httpsProxy
+        elif socksProxy:
+            proxies = {}
+            # https://stackoverflow.com/a/15661226/2377343
+            proxies['http'] = socksProxy
+            proxies['https'] = socksProxy
+        proxyAgentSet = proxies is not None
+        self.check_conflicting_proxies(proxyAgentSet, proxyUrl)
+        # specifically for async-python, there is ".proxies" property maintained
+        if (self.proxies is not None):
+            if (proxyAgentSet or proxyUrl):
+                raise ExchangeError(self.id + ' you have conflicting proxy settings - use either .proxies or http(s)Proxy / socksProxy / proxyUrl')
+            proxies = self.proxies
+        # log
+        if self.verbose:
+            self.log("\nfetch Request:", self.id, method, url, "RequestHeaders:", request_headers, "RequestBody:", body)
+        self.logger.debug("%s %s, Request: %s %s", method, url, request_headers, body)
+        # end of proxies & headers
+
+        request_body = body
+        if body:
+            body = body.encode()
+
+        self.session.cookies.clear()
+
+        http_response = None
+        http_status_code = None
+        http_status_text = None
+        json_response = None
+        try:
+            response = self.session.request(
+                method,
+                url,
+                data=body,
+                headers=request_headers,
+                timeout=(self.timeout / 1000),
+                proxies=proxies,
+                verify=self.verify and self.validateServerSsl
+            )
+            # does not try to detect encoding
+            response.encoding = 'utf-8'
+            headers = response.headers
+            http_status_code = response.status_code
+            http_status_text = response.reason
+            http_response = self.on_rest_response(http_status_code, http_status_text, url, method, headers, response.text, request_headers, request_body)
+            json_response = self.parse_json(http_response)
+            # FIXME remove last_x_responses from subclasses
+            if self.enableLastHttpResponse:
+                self.last_http_response = http_response
+            if self.enableLastJsonResponse:
+                self.last_json_response = json_response
+            if self.enableLastResponseHeaders:
+                self.last_response_headers = headers
+            if self.verbose:
+                self.log("\nfetch Response:", self.id, method, url, http_status_code, "ResponseHeaders:", headers, "ResponseBody:", http_response)
+            self.logger.debug("%s %s, Response: %s %s %s", method, url, http_status_code, headers, http_response)
+            if json_response and not isinstance(json_response, list) and self.returnResponseHeaders:
+                json_response['responseHeaders'] = headers
+>           response.raise_for_status()
+
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/ccxt/base/exchange.py:614:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Response [401]>
+
+    def raise_for_status(self):
+        """Raises :class:`HTTPError`, if one occurred."""
+
+        http_error_msg = ""
+        if isinstance(self.reason, bytes):
+            # We attempt to decode utf-8 first because some servers
+            # choose to localize their reason strings. If the string
+            # isn't utf-8, we fall back to iso-8859-1 for all other
+            # encodings. (See PR #3538)
+            try:
+                reason = self.reason.decode("utf-8")
+            except UnicodeDecodeError:
+                reason = self.reason.decode("iso-8859-1")
+        else:
+            reason = self.reason
+
+        if 400 <= self.status_code < 500:
+            http_error_msg = (
+                f"{self.status_code} Client Error: {reason} for url: {self.url}"
+            )
+
+        elif 500 <= self.status_code < 600:
+            http_error_msg = (
+                f"{self.status_code} Server Error: {reason} for url: {self.url}"
+            )
+
+        if http_error_msg:
+>           raise HTTPError(http_error_msg, response=self)
+E           requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://api.phemex.com/spot/orders
+
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/requests/models.py:1026: HTTPError
+
+During handling of the above exception, another exception occurred:
+
+exchange_adapter = <src.execution.exchange_adapter.ExchangeAdapter object at 0x7f399dd94fe0>
+mock_ccxt_exchange = <Mock spec='binance' id='139885438127328'>
+
+    def test_create_order(exchange_adapter, mock_ccxt_exchange):
+        symbol = 'BTC/USDT'
+        order_type = 'market'
+        side = 'buy'
+        amount = 0.01
+
+>       order = exchange_adapter.create_order(symbol, order_type, side, amount)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+stradegy_optimizer/tests/test_execution/test_exchange_adapter.py:41:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stradegy_optimizer/src/execution/exchange_adapter.py:50: in create_order
+    order = self.exchange.create_order(symbol, type, side, amount, price)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/ccxt/phemex.py:2734: in create_order
+    response = self.privatePostSpotOrders(self.extend(request, params))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/ccxt/base/types.py:35: in unbound_method
+    return _self.request(self.path, self.api, self.method, params, config=self.config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/ccxt/base/exchange.py:5051: in request
+    return self.fetch2(path, api, method, params, headers, body, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/ccxt/base/exchange.py:5047: in fetch2
+    raise e
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/ccxt/base/exchange.py:5035: in fetch2
+    return self.fetch(request['url'], request['method'], request['headers'], request['body'])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/ccxt/base/exchange.py:630: in fetch
+    skip_further_error_handling = self.handle_errors(http_status_code, http_status_text, url, method, headers, http_response, json_response, request_headers, request_body)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/ccxt/phemex.py:5027: in handle_errors
+    self.throw_exactly_matched_exception(self.exceptions['exact'], errorCode, feedback)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ccxt.phemex()
+exact = {'10001': <class 'ccxt.base.errors.DuplicateOrderId'>, '10002': <class 'ccxt.base.errors.OrderNotFound'>, '10003': <class 'ccxt.base.errors.CancelPending'>, '10004': <class 'ccxt.base.errors.CancelPending'>, ...}
+string = '401'
+message = 'phemex {"code": "401","msg": "401 Failed to load API KEY."}'
+
+    def throw_exactly_matched_exception(self, exact, string, message):
+        if string is None:
+            return
+        if string in exact:
+>           raise exact[string](message)
+E           ccxt.base.errors.AuthenticationError: phemex {"code": "401","msg": "401 Failed to load API KEY."}
+
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/ccxt/base/exchange.py:5452: AuthenticationError
+------------------------------ Captured log call -------------------------------
+ERROR    root:exchange_adapter.py:54 Error creating order for BTC/USDT: phemex {"code": "401","msg": "401 Failed to load API KEY."}
+___________________________ test_fetch_order_status ____________________________
+
+exchange_adapter = <src.execution.exchange_adapter.ExchangeAdapter object at 0x7f3997fc1250>
+mock_ccxt_exchange = <Mock spec='binance' id='139885410480496'>
+
+    def test_fetch_order_status(exchange_adapter, mock_ccxt_exchange):
+        order_id = 'test_order_id'
+>       status = exchange_adapter.fetch_order_status(order_id)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+stradegy_optimizer/tests/test_execution/test_exchange_adapter.py:48:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stradegy_optimizer/src/execution/exchange_adapter.py:63: in fetch_order_status
+    order = self.exchange.fetch_order(order_id, symbol)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ccxt.phemex(), id = 'test_order_id', symbol = None, params = {}
+
+    def fetch_order(self, id: str, symbol: Str = None, params={}):
+        """
+
+        https://phemex-docs.github.io/#query-orders-by-ids
+
+        fetches information on an order made by the user
+        :param str id: the order id
+        :param str symbol: unified symbol of the market the order was made in
+        :param dict [params]: extra parameters specific to the exchange API endpoint
+        :returns dict: An `order structure <https://docs.ccxt.com/?id=order-structure>`
+        """
+        if symbol is None:
+>           raise ArgumentsRequired(self.id + ' fetchOrder() requires a symbol argument')
+E           ccxt.base.errors.ArgumentsRequired: phemex fetchOrder() requires a symbol argument
+
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/ccxt/phemex.py:2986: ArgumentsRequired
+------------------------------ Captured log call -------------------------------
+ERROR    root:exchange_adapter.py:66 Error fetching order status for test_order_id: phemex fetchOrder() requires a symbol argument
+______________________________ test_rate_limiting ______________________________
+
+exchange_adapter = <src.execution.exchange_adapter.ExchangeAdapter object at 0x7f397f2fd310>
+mock_ccxt_exchange = <Mock spec='binance' id='139884923702832'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f397f2fcec0>
+
+    def test_rate_limiting(exchange_adapter, mock_ccxt_exchange, monkeypatch):
+        # Ensure initial call is fast
+        start_time = time.time()
+        exchange_adapter.fetch_ohlcv('BTC/USDT', '1h')
+        end_time = time.time()
+>       assert (end_time - start_time) * 1000 < 50 # Should be fast
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert ((1769858202.0929985 - 1769858201.4365997) * 1000) < 50
+
+stradegy_optimizer/tests/test_execution/test_exchange_adapter.py:58: AssertionError
+________________________________ test_read_root ________________________________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_______________________________ test_get_metrics _______________________________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+______________________________ test_get_incidents ______________________________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+___________________________ test_get_audit_artifact ____________________________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+______________________ test_get_audit_artifact_not_found _______________________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+___________________________ test_perturb_parameters ____________________________
+
+fallback_mode = <src.optimizer.fallback_mode.FallbackMode object at 0x7f398bf5ca40>
+mock_backtest_engine = <Mock spec='BacktestEngine' id='139885138392656'>
+mocker = <pytest_mock.plugin.MockerFixture object at 0x7f39897c08f0>
+
+    def test_perturb_parameters(fallback_mode, mock_backtest_engine, mocker):
+        current_params = {
+            "min_score": 2.0,
+            "rsi_oversold": 30,
+            "stop_multiplier": 2.0,
+            "risk_pct": 0.5,
+            "w_range": 0.33,
+            "w_rsi": 0.33,
+            "w_trend": 0.34,
+            "base_scale": 2.0
+        }
+
+        # Set up the mock to return progressively better results for each call
+        # This ensures that at least one variant will have a better score than baseline
+        call_count = {'count': 0}
+        def rapid_backtest_side_effect(*args, **kwargs):
+            call_count['count'] += 1
+            # First call is baseline
+            if call_count['count'] == 1:
+                return mocker.Mock(profit_factor=1.2, max_drawdown_pct=10.0, total_trades=10)
+            # Later calls should have incrementally better profit factor
+            else:
+                profit_factor = 1.2 + (0.1 * call_count['count'])
+                return mocker.Mock(profit_factor=profit_factor, max_drawdown_pct=5.0, total_trades=10)
+
+        mock_backtest_engine.rapid_backtest.side_effect = rapid_backtest_side_effect
+
+>       perturbed_params = fallback_mode.perturb_parameters(current_params, "BTC/USDT", "2023-01-01T00:00:00Z")
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+stradegy_optimizer/tests/test_optimizer/test_fallback_mode.py:47:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <src.optimizer.fallback_mode.FallbackMode object at 0x7f398bf5ca40>
+current_params = {'base_scale': 2.0, 'min_score': 2.0, 'risk_pct': 0.5, 'rsi_oversold': 30, ...}
+symbol = 'BTC/USDT', end_date = '2023-01-01T00:00:00Z'
+
+    def perturb_parameters(self, current_params: dict, symbol: str, end_date: str) -> dict:
+        """
+        Perturbs parameters more aggressively to find higher profit configurations.
+        Uses rapid backtesting to score variants. Validates that results are realistic.
+        """
+        logging.warning("LLM failed, using deterministic fallback mode.")
+
+        best_params = current_params
+        # Run a baseline backtest to get the current score
+        baseline_result = self.backtest_engine.rapid_backtest(symbol, end_date, current_params)
+        if not baseline_result:
+            return self.revert_to_safe_baseline()
+
+        # Validate baseline result is realistic (need minimum trades for statistical relevance)
+        if baseline_result.total_trades < 3 or np.isinf(baseline_result.profit_factor):
+            logging.warning(f"Baseline result is invalid (<3 trades or inf profit), reverting to safe baseline")
+            return self.revert_to_safe_baseline()
+
+        # Score prioritizes profit heavily for 25% target achievement
+        best_score = baseline_result.profit_factor * 100 - 3 * abs(baseline_result.max_drawdown_pct)
+        logging.info(f"Baseline score: {best_score:.2f} (profit_factor={baseline_result.profit_factor:.2f}, trades={baseline_result.total_trades})")
+
+        # Iterate through each parameter with MORE aggressive perturbations
+        for param_to_perturb in current_params.keys():
+            if param_to_perturb not in self.parameter_bounds:
+                continue
+
+            param_range = self.parameter_bounds[param_to_perturb]['max'] - self.parameter_bounds[param_to_perturb]['min']
+            # More aggressive: test larger deltas (10%, 15%, 20% of range)
+            deltas = [0.10 * param_range, 0.15 * param_range, 0.20 * param_range]
+
+            # Create variants with larger perturbations
+            for delta in deltas:
+                for sign in [1, -1]:
+                    variant_params = current_params.copy()
+                    variant_params[param_to_perturb] += sign * delta
+                    variant_params[param_to_perturb] = max(
+                        self.parameter_bounds[param_to_perturb]['min'],
+                        min(self.parameter_bounds[param_to_perturb]['max'], variant_params[param_to_perturb])
+                    )
+
+                    # Skip if unchanged
+                    if variant_params[param_to_perturb] == current_params[param_to_perturb]:
+                        continue
+
+                    # Score the variant using rapid backtesting
+                    result = self.backtest_engine.rapid_backtest(symbol, end_date, variant_params)
+                    # CRITICAL: Require minimum 3 trades for statistical relevance, no inf values
+                    if result and result.total_trades >= 3 and not np.isinf(result.profit_factor):
+                        # Weighted scoring: profit * 100 + win_rate * 0.5 - drawdown * 3
+>                       score = (result.profit_factor * 100) + (result.win_rate * 0.5) - (3 * abs(result.max_drawdown_pct))
+                                                                ^^^^^^^^^^^^^^^^^^^^^
+E                       TypeError: unsupported operand type(s) for *: 'Mock' and 'float'
+
+stradegy_optimizer/src/optimizer/fallback_mode.py:66: TypeError
+------------------------------ Captured log call -------------------------------
+WARNING  root:fallback_mode.py:21 LLM failed, using deterministic fallback mode.
+____________________________ test_query_llm_success ____________________________
+
+llm_interface = <src.optimizer.llm_interface.LLMInterface object at 0x7f399ddcc830>
+mock_deepseek_client = <Mock name='mock.chat' id='139885438367648'>
+
+    def test_query_llm_success(llm_interface, mock_deepseek_client):
+        prompt = "Generate parameters"
+        context = {"current_state": "normal"}
+        result = llm_interface.query_llm(prompt, context)
+>       assert result == {"param1": 10, "param2": "test"}
+E       AssertionError: assert None == {'param1': 10, 'param2': 'test'}
+
+stradegy_optimizer/tests/test_optimizer/test_llm_interface.py:23: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    root:llm_interface.py:110 Invalid proposal schema: {'param1': 10, 'param2': 'test'}
+___________________________ test_parse_json_response ___________________________
+
+llm_interface = <src.optimizer.llm_interface.LLMInterface object at 0x7f399dde2e40>
+
+    def test_parse_json_response(llm_interface):
+        json_string = '{"key": "value", "number": 123}'
+>       result = llm_interface.parse_json_response(json_string)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'LLMInterface' object has no attribute 'parse_json_response'
+
+stradegy_optimizer/tests/test_optimizer/test_llm_interface.py:34: AttributeError
+_______________________ test_parse_json_response_invalid _______________________
+
+llm_interface = <src.optimizer.llm_interface.LLMInterface object at 0x7f39897bddf0>
+
+    def test_parse_json_response_invalid(llm_interface):
+        invalid_json_string = '{"key": "value", "number": 123'
+>       result = llm_interface.parse_json_response(invalid_json_string)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'LLMInterface' object has no attribute 'parse_json_response'
+
+stradegy_optimizer/tests/test_optimizer/test_llm_interface.py:39: AttributeError
+_______________________________ test_log_tested ________________________________
+
+parameter_memory = <src.optimizer.parameter_memory.ParameterMemory object at 0x7f398804ae40>
+
+    def test_log_tested(parameter_memory):
+        params = {"min_score": 2.0, "rsi_oversold": 30}
+        regime = "TREND"
+        result = "success"
+        metrics = {"profit": 5.0}
+
+        parameter_memory.log_tested(params, regime, metrics, result)
+
+        # Verify directly from the state manager
+        query = "SELECT params_hash, regime, result FROM parameter_history WHERE params_hash = ? AND regime = ?"
+        params_hash = parameter_memory._hash_params(params)
+        retrieved = parameter_memory.state_manager.execute_query(query, (params_hash, regime), fetch='one')
+
+>       assert retrieved is not None
+E       assert None is not None
+
+stradegy_optimizer/tests/test_optimizer/test_parameter_memory.py:23: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    root:state_manager.py:75 Error executing query '
+                    INSERT OR REPLACE INTO parameter_history
+                    (params_hash, params_json, regime, profit_pct, max_drawdown_pct, win_rate, total_trades, result)
+                    VALUES (:p1, :p2, :p3, :p4, :p5, :p6, :p7, :p8)
+                ' with params ('e16c86b5', '{"min_score": 2.0, "rsi_oversold": 30}', 'TREND', 5.0, 0, 0, 0, 'success'): (sqlite3.OperationalError) table parameter_history has no column named params_json
+[SQL:
+                    INSERT OR REPLACE INTO parameter_history
+                    (params_hash, params_json, regime, profit_pct, max_drawdown_pct, win_rate, total_trades, result)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ]
+[parameters: ('e16c86b5', '{"min_score": 2.0, "rsi_oversold": 30}', 'TREND', 5.0, 0, 0, 0, 'success')]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+___________________________ test_propose_parameters ____________________________
+
+strategy_optimizer = <src.optimizer.strategy_optimizer.StrategyOptimizer object at 0x7f399dda2960>
+event_bus_optimizer = <src.data_bus.event_bus.EventBus object at 0x7f399dda10d0>
+
+    def test_propose_parameters(strategy_optimizer, event_bus_optimizer):
+        current_metrics = {"max_drawdown_pct": 10.0, "profit_factor": 1.5, "profit": 5.0}
+        regime = "TREND"
+        history = {} # Placeholder
+
+        # propose_parameters returns a tuple in v2
+        params, action, reasoning = strategy_optimizer.propose_parameters(1, current_metrics, regime, history, "BTC/USDT", "2023-01-01T00:00:00Z")
+
+        # We must then publish it to get the proposal object
+        proposal = strategy_optimizer.publish_proposal(params, action)
+
+>       assert isinstance(proposal, OptimizerProposal)
+E       AssertionError: assert False
+E        +  where False = isinstance(OptimizerProposal(proposal_id='8b2b8175-6416-4dee-8c29-58e689086c06', timestamp=datetime.datetime(2026, 1, 31, 11, 16,...r': 2.0, 'risk_pct': 1.0}, context={'action': 'HOLD', 'timestamp': '2026-01-31T11:16:42.425130'}, causal_chain_refs=[]), OptimizerProposal)
+
+stradegy_optimizer/tests/test_optimizer/test_strategy_optimizer.py:53: AssertionError
+________________________________ test_classify _________________________________
+
+regime_classifier = <src.processors.regime_classifier.RegimeClassifier object at 0x7f3988223ef0>
+sample_indicators_data =             timestamp  adx  atr_percentile_90
+0 2023-01-01 00:00:00   10               0.10
+1 2023-01-01 01:00:00   15...:00   26               0.70
+8 2023-01-01 08:00:00   30               0.90
+9 2023-01-01 09:00:00   20               0.60
+
+    def test_classify(regime_classifier, sample_indicators_data):
+        regimes = regime_classifier.classify(sample_indicators_data)
+        assert isinstance(regimes, pd.DataFrame)
+        assert 'regime' in regimes.columns
+        assert 'confidence' in regimes.columns
+        assert len(regimes) == len(sample_indicators_data)
+
+        # Example checks based on sample data and default config
+        # Merge the results with the original data to check conditions
+        result_df = pd.concat([sample_indicators_data, regimes], axis=1)
+
+        # ADX > 25 (trending)
+>       assert result_df.loc[result_df['adx'] == 28, 'regime'].iloc[0] == 'TREND'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+stradegy_optimizer/tests/test_processors/test_regime_classifier.py:41:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/pandas/core/indexing.py:1200: in __getitem__
+    return self._getitem_tuple(key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/pandas/core/indexing.py:1386: in _getitem_tuple
+    return self._getitem_lowerdim(tup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/pandas/core/indexing.py:1117: in _getitem_lowerdim
+    return getattr(section, self.name)[new_key]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/pandas/core/indexing.py:1207: in __getitem__
+    return self._getitem_axis(maybe_callable, axis=axis)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <pandas.core.indexing._LocIndexer object at 0x7f39975590e0>
+key =      adx    adx
+0  False  False
+1  False  False
+2  False  False
+3   True   True
+4  False  False
+5  False  False
+6  False  False
+7  False  False
+8  False  False
+9  False  False
+axis = 0
+
+    def _getitem_axis(self, key, axis: AxisInt):
+        key = item_from_zerodim(key)
+        if is_iterator(key):
+            key = list(key)
+        if key is Ellipsis:
+            key = slice(None)
+
+        labels = self.obj._get_axis(axis)
+
+        if isinstance(key, tuple) and isinstance(labels, MultiIndex):
+            key = tuple(key)
+
+        if isinstance(key, slice):
+            self._validate_key(key, axis)
+            return self._get_slice_axis(key, axis=axis)
+        elif com.is_bool_indexer(key):
+            return self._getbool_axis(key, axis=axis)
+        elif is_list_like_indexer(key):
+            # an iterable multi-selection
+            if not (isinstance(key, tuple) and isinstance(labels, MultiIndex)):
+                if hasattr(key, "ndim") and key.ndim > 1:
+>                   raise ValueError("Cannot index with multidimensional key")
+E                   ValueError: Cannot index with multidimensional key
+
+/home/jules/.pyenv/versions/3.12.12/lib/python3.12/site-packages/pandas/core/indexing.py:1436: ValueError
+=============================== warnings summary ===============================
+stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py:37
+  /app/stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py:37: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py:44
+  /app/stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py:44: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py:51
+  /app/stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py:51: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py:59
+  /app/stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py:59: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py:67
+  /app/stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py:67: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+tests/test_audit/test_causal_chain_validator.py::test_validate_proposal_valid
+  /app/stradegy_optimizer/tests/test_audit/test_causal_chain_validator.py:23: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow()
+
+tests/test_audit/test_causal_chain_validator.py::test_validate_proposal_future_artifact
+  /app/stradegy_optimizer/tests/test_audit/test_causal_chain_validator.py:42: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow()
+
+tests/test_audit/test_causal_chain_validator.py::test_validate_proposal_future_artifact
+tests/test_audit/test_causal_chain_validator.py::test_validate_proposal_missing_artifact
+  /app/stradegy_optimizer/tests/test_audit/test_causal_chain_validator.py:12: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    side_effect=lambda artifact_id: type('obj', (object,), {'timestamp': datetime.utcnow() - timedelta(hours=1)})()
+
+tests/test_audit/test_causal_chain_validator.py::test_validate_proposal_future_artifact
+  /app/stradegy_optimizer/tests/test_audit/test_causal_chain_validator.py:14: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    else type('obj', (object,), {'timestamp': datetime.utcnow() + timedelta(hours=1)})()
+
+tests/test_audit/test_causal_chain_validator.py::test_validate_proposal_missing_artifact
+  /app/stradegy_optimizer/tests/test_audit/test_causal_chain_validator.py:59: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow()
+
+tests/test_data_bus/test_market_data_bus.py::test_ingest_candles
+tests/test_data_bus/test_market_data_bus.py::test_get_candles
+  /app/stradegy_optimizer/src/data_bus/market_data_bus.py:91: Pandas4Warning: is_datetime64tz_dtype is deprecated and will be removed in a future version. Check `isinstance(dtype, pd.DatetimeTZDtype)` instead.
+    if not pd.api.types.is_datetime64tz_dtype(df['timestamp']):
+
+tests/test_governance/test_approval_workflow.py::test_request_approval
+tests/test_governance/test_approval_workflow.py::test_approve_ticket
+tests/test_governance/test_approval_workflow.py::test_reject_ticket
+tests/test_governance/test_approval_workflow.py::test_check_approval_status
+tests/test_governance/test_approval_workflow.py::test_check_approval_status
+tests/test_governance/test_approval_workflow.py::test_check_approval_status_expired
+  /app/stradegy_optimizer/src/governance/approval_workflow.py:32: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    requested_at = datetime.utcnow()
+
+tests/test_governance/test_approval_workflow.py::test_request_approval
+  /app/stradegy_optimizer/tests/test_governance/test_approval_workflow.py:22: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    assert ticket[3].startswith(datetime.utcnow().isoformat()[:10]) # Date part should match
+
+tests/test_governance/test_approval_workflow.py::test_approve_ticket
+tests/test_governance/test_approval_workflow.py::test_check_approval_status
+  /app/stradegy_optimizer/src/governance/approval_workflow.py:50: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    ('approved', approver, datetime.utcnow().isoformat(), ticket_id)
+
+tests/test_governance/test_approval_workflow.py::test_reject_ticket
+  /app/stradegy_optimizer/src/governance/approval_workflow.py:65: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    ('rejected', approver, datetime.utcnow().isoformat(), ticket_id)
+
+tests/test_governance/test_approval_workflow.py::test_check_approval_status
+tests/test_governance/test_approval_workflow.py::test_check_approval_status_expired
+  /app/stradegy_optimizer/src/governance/approval_workflow.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    if status == 'pending' and datetime.utcnow() > datetime.fromisoformat(timeout_at_str):
+
+tests/test_governance/test_incident_tracker.py::test_log_incident
+tests/test_governance/test_incident_tracker.py::test_mark_resolved
+tests/test_governance/test_incident_tracker.py::test_get_active_incidents
+tests/test_governance/test_incident_tracker.py::test_get_active_incidents
+tests/test_governance/test_incident_tracker.py::test_get_active_incidents
+tests/test_governance/test_incident_tracker.py::test_get_incident_history
+tests/test_governance/test_incident_tracker.py::test_get_incident_history
+  /app/stradegy_optimizer/src/governance/incident_tracker.py:32: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat()
+
+tests/test_governance/test_incident_tracker.py::test_mark_resolved
+tests/test_governance/test_incident_tracker.py::test_get_active_incidents
+  /app/stradegy_optimizer/src/governance/incident_tracker.py:45: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    resolved_at = datetime.utcnow().isoformat()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED stradegy_optimizer/tests/test_backtesting/test_backtest_engine.py::test_run_backtest
+FAILED stradegy_optimizer/tests/test_backtesting/test_backtest_engine.py::test_rapid_backtest
+FAILED stradegy_optimizer/tests/test_data_bus/test_market_data_bus.py::test_ingest_candles
+FAILED stradegy_optimizer/tests/test_data_bus/test_market_data_bus.py::test_get_candles
+FAILED stradegy_optimizer/tests/test_execution/test_exchange_adapter.py::test_fetch_ohlcv
+FAILED stradegy_optimizer/tests/test_execution/test_exchange_adapter.py::test_create_order
+FAILED stradegy_optimizer/tests/test_execution/test_exchange_adapter.py::test_fetch_order_status
+FAILED stradegy_optimizer/tests/test_execution/test_exchange_adapter.py::test_rate_limiting
+FAILED stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py::test_read_root
+FAILED stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py::test_get_metrics
+FAILED stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py::test_get_incidents
+FAILED stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py::test_get_audit_artifact
+FAILED stradegy_optimizer/tests/test_monitoring/test_dashboard_server.py::test_get_audit_artifact_not_found
+FAILED stradegy_optimizer/tests/test_optimizer/test_fallback_mode.py::test_perturb_parameters
+FAILED stradegy_optimizer/tests/test_optimizer/test_llm_interface.py::test_query_llm_success
+FAILED stradegy_optimizer/tests/test_optimizer/test_llm_interface.py::test_parse_json_response
+FAILED stradegy_optimizer/tests/test_optimizer/test_llm_interface.py::test_parse_json_response_invalid
+FAILED stradegy_optimizer/tests/test_optimizer/test_parameter_memory.py::test_log_tested
+FAILED stradegy_optimizer/tests/test_optimizer/test_strategy_optimizer.py::test_propose_parameters
+FAILED stradegy_optimizer/tests/test_processors/test_regime_classifier.py::test_classify
+20 failed, 130 passed, 34 warnings in 18.38s

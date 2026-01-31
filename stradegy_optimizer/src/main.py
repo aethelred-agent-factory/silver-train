@@ -267,7 +267,7 @@ def main():
     
     # Execution & Governance
     order_manager = OrderManager(config, exchange_adapter, state_manager)
-    execution_engine = ExecutionEngine(config, order_manager)
+    execution_engine = ExecutionEngine(config, order_manager, state_manager, portfolio)
     incident_tracker = IncidentTracker(config, state_manager)
     approval_workflow = ApprovalWorkflow(config, state_manager)
     restriction_enforcer = RestrictionEnforcer(config)
@@ -287,153 +287,82 @@ def main():
     # health_thread = threading.Thread(target=health_checker.start_periodic_checks, daemon=True)
     # health_thread.start()
 
-    # 4. Main orchestration loop with REAL DATA
+    # 4. Main orchestration loop (MVTP - Live Trading Flow)
     symbol = 'BTC/USDT'
-    start_date = '2025-06-01T00:00:00Z'
-    end_date = '2026-01-31T23:59:59Z'
-    
-    iteration = 0
-    max_iterations = 50  # Run for up to 50 iterations or until conditions are met
     current_params = config.get('safe_baseline', {})
-    optimization_history = []  # Track optimization progress
-    
-    # Optimization stopping conditions
-    profit_target = config.get('optimization_config', {}).get('optimization_targets', {}).get('profit_target', 10.0)
-    win_rate_target = config.get('optimization_config', {}).get('optimization_targets', {}).get('win_rate_target', 40.0)
-    max_drawdown_target = config.get('optimization_config', {}).get('optimization_targets', {}).get('max_drawdown_target', 20.0)
-    stability_window = config.get('optimization_config', {}).get('optimization_targets', {}).get('stability_window', 10)
+    iteration = 0
     
     logging.info(f"\n{'='*80}")
-    logging.info(f"OPTIMIZATION TARGETS:")
-    logging.info(f"  - Profit Target: {profit_target}%")
-    logging.info(f"  - Win Rate Target: {win_rate_target}%")
-    logging.info(f"  - Max Drawdown Target: {max_drawdown_target}%")
-    logging.info(f"  - Stability Window: {stability_window} iterations")
-    logging.info(f"  - Max Iterations: {max_iterations}")
+    logging.info(f"STARTING MINIMAL VIABLE TRADING PATH (MVTP)")
+    logging.info(f"MODE: PAPER TRADING")
     logging.info(f"{'='*80}\n")
     
     try:
-        while iteration < max_iterations:
+        while True:
             iteration += 1
-            logging.info(f"\n{'='*80}")
-            logging.info(f"ITERATION {iteration}/{max_iterations} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-            logging.info(f"{'='*80}")
-            
-            # ============================================================
-            # STEP 1: RUN REAL BACKTEST ON REAL DATA
-            # ============================================================
-            logging.info("Step 1: Running backtest on real market data...")
-            backtest_result = backtest_engine.run_backtest(symbol, start_date, end_date, current_params)
-            
-            if backtest_result is None:
-                logging.error("Backtest returned None - likely no signals generated from real data")
-                logging.error("Checking data availability...")
-                try:
-                    data_validator.assert_data_available()
-                except RuntimeError as e:
-                    logging.critical(str(e))
-                    raise
-                logging.warning("Skipping iteration due to backtest failure")
-                time.sleep(5)
+            logging.info(f"\nITERATION {iteration} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+            # 0. Global Kill Switch Check (Step 5)
+            if state_manager.is_kill_switch_active():
+                logging.critical("System HALTED by Global Kill Switch. Exiting main loop.")
+                break
+
+            # 1. Ingest Live Market Data (MVTP Trace)
+            logging.info("Step 1: Ingesting live market data...")
+            # In live/paper, we fetch latest 100 candles
+            try:
+                candles = market_data_bus.fetch_latest(symbol, limit=100)
+            except Exception as e:
+                logging.error(f"Data ingestion failed: {e}")
+                time.sleep(10)
                 continue
-            
-            # ============================================================
-            # STEP 2: EXTRACT REAL METRICS FROM BACKTEST
-            # ============================================================
-            logging.info("Step 2: Extracting metrics from real backtest results...")
-            current_metrics = {
-                'profit': backtest_result.profit_factor * 100 - 100,
-                'max_drawdown_pct': backtest_result.max_drawdown_pct,
-                'win_rate': backtest_result.win_rate,
-                'sharpe_ratio': backtest_result.sharpe_ratio,
-                'total_trades': backtest_result.total_trades,
-                'profit_factor': backtest_result.profit_factor,
-                'parameters': current_params.copy(),
-                'regime_confidence': 0.85  # Placeholder - would be from regime classifier
+
+            # 2. Generate Signals (MVTP Trace)
+            logging.info("Step 2: Generating signals from indicators...")
+            # Note: signal_generator calculates score internally
+            signals = signal_generator.generate_signals(symbol, None, None, current_params)
+            if signals.empty:
+                logging.warning("No signal data produced.")
+                time.sleep(10)
+                continue
+
+            latest_signal = signals.iloc[-1].to_dict()
+            logging.info(f"  - Latest Price: {latest_signal.get('close')}")
+            logging.info(f"  - Signal: {latest_signal.get('signal')} (Score: {latest_signal.get('score', 0):.2f})")
+
+            # 3. Size Position (MVTP Trace)
+            # Calculate amount based on portfolio state and risk
+            amount = 0.01 # Placeholder for position manager sizing
+            signal_dict = {
+                'symbol': symbol,
+                'signal': latest_signal.get('signal'),
+                'amount': amount,
+                'price': latest_signal.get('close')
             }
-            
-            # Store in history for summary
-            optimization_history.append({
-                'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
-                'metrics': current_metrics,
-            })
-            
-            logging.info(f"  - Profit: {current_metrics['profit']:.2f}%")
-            logging.info(f"  - Max Drawdown: {current_metrics['max_drawdown_pct']:.2f}%")
-            logging.info(f"  - Win Rate: {current_metrics['win_rate']:.2f}%")
-            logging.info(f"  - Total Trades: {current_metrics['total_trades']}")
-            logging.info(f"  - Sharpe Ratio: {current_metrics['sharpe_ratio']:.2f}")
-            
-            # ============================================================
-            # CHECK STOPPING CONDITIONS
-            # ============================================================
-            conditions_met = (
-                current_metrics['profit'] >= profit_target and
-                current_metrics['win_rate'] >= win_rate_target and
-                current_metrics['max_drawdown_pct'] <= max_drawdown_target
-            )
-            
-            if conditions_met and len(optimization_history) >= stability_window:
-                logging.info("\n" + "="*80)
-                logging.info("✓ OPTIMIZATION TARGETS MET!")
-                logging.info("="*80)
-                logging.info(f"  - Profit: {current_metrics['profit']:.2f}% (target: {profit_target}%)")
-                logging.info(f"  - Win Rate: {current_metrics['win_rate']:.2f}% (target: {win_rate_target}%)")
-                logging.info(f"  - Max Drawdown: {current_metrics['max_drawdown_pct']:.2f}% (target: {max_drawdown_target}%)")
-                logging.info("="*80 + "\n")
-                break  # Exit loop - conditions met
-            
-            # ============================================================
-            # STEP 3: CLASSIFY REGIME FROM REAL DATA
-            # ============================================================
-            logging.info("Step 3: Classifying market regime from real data...")
-            regime, confidence = regime_classifier.classify_latest(symbol, start_date, end_date)
-            logging.info(f"  - Regime: {regime}, Confidence: {confidence:.2f}%")
-            
-            # ============================================================
-            # STEP 4: GENERATE PROPOSAL FROM REAL BACKTEST METRICS
-            # ============================================================
-            logging.info("Step 4: Generating parameter proposal from real metrics...")
-            proposed_params, action, reasoning = strategy_optimizer.propose_parameters(
-                iteration, current_metrics, regime, {}, symbol, end_date
-            )
-            logging.info(f"  - Action: {action}")
-            logging.info(f"  - Reasoning: {reasoning}")
-            logging.info(f"  - Proposed Params: {proposed_params}")
-            
-            # Publish proposal
-            proposal = strategy_optimizer.publish_proposal(proposed_params, action)
-            
-            # ============================================================
-            # STEP 5: RUN AUDIT ON PROPOSAL
-            # ============================================================
-            logging.info("Step 5: Running audit on proposal...")
-            verdict = audit_layer.audit_proposal(proposal)
-            logging.info(f"  - Verdict: {verdict.action.type}")
-            
-            if verdict.tiered_findings:
-                for finding in verdict.tiered_findings:
-                    logging.info(f"    {finding.tier}: {finding.code} - {finding.explanation}")
-            
-            # ============================================================
-            # STEP 6: SKIP TRADE EXECUTION - PURE OPTIMIZATION ONLY
-            # ============================================================
-            logging.info("Step 6: Skipping trade execution (pure optimization mode)")
-            logging.info("  - No paper trades, no position tracking")
-            
-            # Update parameter for next iteration
-            if action == 'UPDATE':
-                current_params = proposed_params
-                logging.info(f"Updated parameters for next iteration")
-            elif action == 'ROLLBACK':
-                logging.info(f"Rolling back to previous parameters")
+
+            if latest_signal.get('signal') == 1:
+                logging.info("✓ BUY SIGNAL DETECTED")
+
+                # 4. Audit & Governance (MVTP Trace / Step 4)
+                # For every trade, we verify against a "HOLD" proposal of current parameters
+                proposal = strategy_optimizer.publish_proposal(current_params, 'HOLD')
+                verdict = audit_layer.audit_proposal(proposal)
+                logging.info(f"  - Audit Verdict: {verdict.action.type}")
+
+                # 5. Place Trade via Hardened Boundary (MVTP Trace / Step 3)
+                logging.info("Step 5: Routing through hardened execution boundary...")
+                success = execution_engine.execute_trade(signal_dict, proposal, verdict)
+                if success:
+                    logging.info("✓ Trade successfully routed to OrderManager")
+                else:
+                    logging.warning("× Trade blocked by safety gates")
             else:
-                logging.info(f"Holding current parameters")
+                logging.info("No signal detected. System monitoring...")
+
+            # 6. Record Results (MVTP Trace)
+            # Result recording is handled internally by OrderManager/PortfolioState/StateManager
             
-            logging.info(f"{'='*80}\n")
-            
-            time.sleep(5)  # Small delay between iterations
+            time.sleep(60) # Live polling interval
     
     except RuntimeError as e:
         logging.critical(f"Fatal error: {str(e)}")

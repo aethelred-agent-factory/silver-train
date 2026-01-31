@@ -11,8 +11,9 @@ def test_log_tested(parameter_memory):
     params = {"min_score": 2.0, "rsi_oversold": 30}
     regime = "TREND"
     result = "success"
+    metrics = {"profit": 5.0}
     
-    parameter_memory.log_tested(params, regime, result)
+    parameter_memory.log_tested(params, regime, metrics, result)
     
     # Verify directly from the state manager
     query = "SELECT params_hash, regime, result FROM parameter_history WHERE params_hash = ? AND regime = ?"
@@ -27,7 +28,7 @@ def test_log_tested(parameter_memory):
 def test_has_been_tested(parameter_memory):
     params1 = {"min_score": 2.0, "rsi_oversold": 30}
     regime1 = "TREND"
-    parameter_memory.log_tested(params1, regime1, "success")
+    parameter_memory.log_tested(params1, regime1, {"profit": 5.0}, "success")
     
     assert parameter_memory.has_been_tested(params1, regime1) is True
     

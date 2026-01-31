@@ -1,9 +1,9 @@
 # tests/test_audit/test_artifact_store.py
 import pytest
 import json
-from src.audit.artifact_store import ArtifactStore
-from src.storage.artifact_manager import ArtifactManager
-from src.data_bus.schemas import AuditVerdict, TieredFinding, AuditAction
+from audit.artifact_store import ArtifactStore
+from storage.artifact_manager import ArtifactManager
+from data_bus.schemas import AuditVerdict, TieredFinding, AuditAction
 from datetime import datetime, timezone
 
 from src.utils.crypto_utils import CryptoUtils

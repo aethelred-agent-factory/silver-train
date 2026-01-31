@@ -36,11 +36,11 @@ def test_perturb_parameters(fallback_mode, mock_backtest_engine, mocker):
         call_count['count'] += 1
         # First call is baseline
         if call_count['count'] == 1:
-            return mocker.Mock(profit_factor=1.2, max_drawdown_pct=10.0)
+            return mocker.Mock(profit_factor=1.2, max_drawdown_pct=10.0, total_trades=10)
         # Later calls should have incrementally better profit factor
         else:
             profit_factor = 1.2 + (0.1 * call_count['count'])
-            return mocker.Mock(profit_factor=profit_factor, max_drawdown_pct=5.0)
+            return mocker.Mock(profit_factor=profit_factor, max_drawdown_pct=5.0, total_trades=10)
     
     mock_backtest_engine.rapid_backtest.side_effect = rapid_backtest_side_effect
 
