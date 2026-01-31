@@ -18,6 +18,10 @@ thresholds:
   t1_data_gap_threshold: 0.1 # 10%
   minimum_trade_history_days: 90  # Minimum days of data before optimization
 
+risk:
+  max_capital_exposure_pct: 20.0
+  max_drawdown_limit_pct: 15.0
+
 api:
   ccxt:
     rate_limit: 2000 # ms
@@ -34,6 +38,7 @@ monitoring:
   dashboard_port: 5000
   health_check_interval: 60 # seconds
   log_level: 'INFO'
+  dashboard_enabled: false
 
 optimization:
   min_iterations_before_freeze: 3    # Must run at least N iterations before allowing freeze

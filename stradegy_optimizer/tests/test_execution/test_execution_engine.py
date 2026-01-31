@@ -11,25 +11,45 @@ def mock_order_manager(mocker):
     return mock
 
 @pytest.fixture
-def execution_engine(test_config, mock_order_manager):
-    return ExecutionEngine(test_config, mock_order_manager)
+def mock_state_manager(mocker):
+    mock = mocker.Mock()
+    mock.is_kill_switch_active.return_value = False
+    return mock
 
-def test_check_execution_safety_block(execution_engine):
-    proposal = {"proposal_id": "prop1"}
+@pytest.fixture
+def mock_portfolio_state(mocker):
+    mock = mocker.Mock()
+    mock.get_metrics.return_value = {'current_equity': 10000.0}
+    mock.max_drawdown_pct = 0.0
+    return mock
+
+@pytest.fixture
+def execution_engine(test_config, mock_order_manager, mock_state_manager, mock_portfolio_state):
+    return ExecutionEngine(test_config, mock_order_manager, mock_state_manager, mock_portfolio_state)
+
+def test_check_governance_approval_block(execution_engine):
     audit_verdict = {"action": {"type": "BLOCK", "reason": "T1_Contradiction"}}
-    assert execution_engine.check_execution_safety(proposal, audit_verdict) is False
+    assert execution_engine._check_governance_approval(audit_verdict) is False
 
-def test_check_execution_safety_allow_with_restriction(execution_engine):
-    proposal = {"proposal_id": "prop1"}
+def test_check_governance_approval_allow_with_restriction(execution_engine):
     audit_verdict = {"action": {"type": "ALLOW_WITH_RESTRICTION", "restrictions": {"max_order_size_pct": 0.5}}}
-    assert execution_engine.check_execution_safety(proposal, audit_verdict) is True
+    assert execution_engine._check_governance_approval(audit_verdict) is True
 
-def test_check_execution_safety_allow(execution_engine):
+def test_check_governance_approval_allow(execution_engine):
+    audit_verdict = {"action": {"type": "ALLOW"}}
+    assert execution_engine._check_governance_approval(audit_verdict) is True
+
+def test_execute_trade_blocked_by_kill_switch(execution_engine, mock_state_manager, mock_order_manager):
+    mock_state_manager.is_kill_switch_active.return_value = True
+    signal = {"symbol": "BTC/USDT", "signal": 1}
     proposal = {"proposal_id": "prop1"}
     audit_verdict = {"action": {"type": "ALLOW"}}
-    assert execution_engine.check_execution_safety(proposal, audit_verdict) is True
 
-def test_execute_trade_blocked(execution_engine, mock_order_manager):
+    result = execution_engine.execute_trade(signal, proposal, audit_verdict)
+    assert result is False
+    mock_order_manager.place_order.assert_not_called()
+
+def test_execute_trade_blocked_by_audit(execution_engine, mock_order_manager):
     signal = {"symbol": "BTC/USDT", "signal": 1}
     proposal = {"proposal_id": "prop1"}
     audit_verdict = {"action": {"type": "BLOCK", "reason": "T1_Contradiction"}}

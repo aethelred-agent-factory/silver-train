@@ -5,9 +5,11 @@ import shutil
 import yaml
 from datetime import datetime, timezone
 
-# Add parent directory to path to allow importing src modules
+# Add parent directory and src directory to path to allow importing modules correctly
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.join(project_root, 'src'))
 
 from src.utils.time_utils import TimeUtils
 from src.utils.crypto_utils import CryptoUtils

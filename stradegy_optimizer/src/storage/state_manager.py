@@ -88,3 +88,15 @@ class StateManager:
         result = self.execute_query(query, (key,), fetch='one')
         logging.debug(f"State loaded for {key}")
         return result[0] if result else None
+
+    def is_kill_switch_active(self) -> bool:
+        """
+        Checks if the global kill switch has been activated in the database.
+        This is the source of truth for emergency halts.
+        """
+        try:
+            val = self.load_state('GLOBAL_KILL_SWITCH')
+            return val == 'HALTED'
+        except Exception:
+            # On error, fail closed (assume halted)
+            return True

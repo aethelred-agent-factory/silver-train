@@ -1,14 +1,14 @@
 # tests/test_audit/test_audit_layer.py
 import pytest
 from datetime import datetime, timezone
-from src.audit.audit_layer import AuditLayer
-from src.data_bus.event_bus import EventBus
-from src.data_bus.schemas import OptimizerProposal, AuditVerdict, TieredFinding, AuditAction
-from src.audit.t1_checks import T1Checks
-from src.audit.t2_checks import T2Checks
-from src.audit.t3_checks import T3Checks
-from src.audit.causal_chain_validator import CausalChainValidator
-from src.audit.artifact_store import ArtifactStore
+from audit.audit_layer import AuditLayer
+from data_bus.event_bus import EventBus
+from data_bus.schemas import OptimizerProposal, AuditVerdict, TieredFinding, AuditAction
+from audit.t1_checks import T1Checks
+from audit.t2_checks import T2Checks
+from audit.t3_checks import T3Checks
+from audit.causal_chain_validator import CausalChainValidator
+from audit.artifact_store import ArtifactStore
 
 @pytest.fixture
 def mock_t1_checks(mocker):

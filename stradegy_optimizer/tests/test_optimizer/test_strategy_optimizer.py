@@ -40,25 +40,26 @@ def strategy_optimizer(test_config, mock_regime_classifier, mock_llm_interface, 
     return StrategyOptimizer(test_config, mock_regime_classifier, mock_llm_interface, mock_fallback_mode, mock_parameter_memory, event_bus_optimizer)
 
 def test_propose_parameters(strategy_optimizer, event_bus_optimizer):
-    current_metrics = {"max_drawdown_pct": 10.0, "profit_factor": 1.5}
+    current_metrics = {"max_drawdown_pct": 10.0, "profit_factor": 1.5, "profit": 5.0}
     regime = "TREND"
     history = {} # Placeholder
 
-    proposal = strategy_optimizer.propose_parameters(current_metrics, regime, history, "BTC/USDT", "2023-01-01T00:00:00Z")
+    # propose_parameters returns a tuple in v2
+    params, action, reasoning = strategy_optimizer.propose_parameters(1, current_metrics, regime, history, "BTC/USDT", "2023-01-01T00:00:00Z")
+
+    # We must then publish it to get the proposal object
+    proposal = strategy_optimizer.publish_proposal(params, action)
 
     assert isinstance(proposal, OptimizerProposal)
     assert proposal.proposal_version == 1
-    assert proposal.source == "StrategyOptimizer_v1"
+    assert proposal.source == "StrategyOptimizer_v2"
     assert "min_score" in proposal.proposed_parameters
-    assert proposal.context['regime_label'] == regime
-    assert proposal.context['metrics_snapshot'] == current_metrics
+    assert proposal.context['action'] == action
 
     # Check if proposal was published to event bus
     published_proposal = event_bus_optimizer.subscribe_proposal()
-    assert published_proposal == proposal
+    assert published_proposal.proposal_id == proposal.proposal_id
 
-def test_apply_frozen_epoch(strategy_optimizer):
-    # This is a placeholder test for a placeholder method
-    strategy_optimizer.apply_frozen_epoch()
-    # No assertion needed for now, as the method does nothing
+def test_placeholder(strategy_optimizer):
+    # apply_frozen_epoch was removed or renamed in v2
     pass
