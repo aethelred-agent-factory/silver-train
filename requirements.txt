@@ -13,3 +13,4 @@ uvicorn
 prometheus-client
 boto3
 openai
+pytest

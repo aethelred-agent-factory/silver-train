@@ -1,3 +1,4 @@
+
 # To learn more about how to use Nix to configure your environment
 # see: https://firebase.google.com/docs/studio/customize-workspace
 { pkgs, ... }: {
@@ -20,10 +21,18 @@
     pkgs.python311Packages.aiohttp
     pkgs.python311Packages.python-dotenv
     pkgs.python311Packages.cryptography
+    pkgs.python311Packages.scipy
+    pkgs.python311Packages.requests
+    pkgs.python311Packages.fastapi
+    pkgs.python311Packages.uvicorn
+    pkgs.python311Packages.prometheus-client
+    pkgs.python311Packages.boto3
+    pkgs.python311Packages.openai
+    pkgs.stdenv.cc.cc.lib
   ];
 
   # Set environment variables
   env = {
-    PYTHONPATH = "${pkgs.python311Packages.pytest}/lib/python3.11/site-packages";
+    PYTHONPATH = ".:${pkgs.python311Packages.pytest}/lib/python3.11/site-packages";
   };
 }

@@ -1,21 +1,15 @@
+
 # tests/conftest.py
 import os
 import shutil
-
-# Add parent directory and src directory to path to allow importing modules correctly
-import sys
 from datetime import datetime, timezone
 
 import pytest
 import yaml
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, project_root)
-sys.path.insert(0, os.path.join(project_root, "src"))
-
-from src.storage.state_manager import StateManager
-from src.utils.crypto_utils import CryptoUtils
-from src.utils.time_utils import TimeUtils
+from strategy_optimizer.storage.state_manager import StateManager
+from strategy_optimizer.utils.crypto_utils import CryptoUtils
+from strategy_optimizer.utils.time_utils import TimeUtils
 
 
 def load_all_config(config_dir="config"):

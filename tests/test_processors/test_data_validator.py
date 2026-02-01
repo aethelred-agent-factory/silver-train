@@ -1,10 +1,10 @@
-# tests/test_processors/test_data_validator.py
+
 from datetime import datetime, timedelta
 
 import pandas as pd
 import pytest
-from src.data_bus.market_data_bus import MarketDataBus
-from src.processors.data_validator import DataValidator
+from strategy_optimizer.data_bus.market_data_bus import MarketDataBus
+from strategy_optimizer.processors.data_validator import DataValidator
 
 
 @pytest.fixture

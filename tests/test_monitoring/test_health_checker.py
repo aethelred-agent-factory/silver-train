@@ -1,9 +1,9 @@
-# tests/test_monitoring/test_health_checker.py
+
 import pytest
-from src.execution.exchange_adapter import ExchangeAdapter
-from src.monitoring.alerting import Alerting
-from src.monitoring.health_checker import HealthChecker
-from src.storage.state_manager import StateManager
+from strategy_optimizer.execution.exchange_adapter import ExchangeAdapter
+from strategy_optimizer.monitoring.alerting import Alerting
+from strategy_optimizer.monitoring.health_checker import HealthChecker
+from strategy_optimizer.storage.state_manager import StateManager
 
 
 @pytest.fixture

@@ -1,11 +1,11 @@
-# tests/test_optimizer/test_signal_generator.py
+
 from datetime import datetime
 
 import pandas as pd
 import pytest
-from src.optimizer.signal_generator import SignalGenerator
-from src.processors.indicator_engine import IndicatorEngine
-from src.processors.regime_classifier import RegimeClassifier
+from strategy_optimizer.optimizer.signal_generator import SignalGenerator
+from strategy_optimizer.processors.indicator_engine import IndicatorEngine
+from strategy_optimizer.processors.regime_classifier import RegimeClassifier
 
 
 @pytest.fixture

@@ -1,7 +1,7 @@
-# tests/test_monitoring/test_metrics_collector.py
+
 import pytest
 from prometheus_client import generate_latest
-from src.monitoring.metrics_collector import MetricsCollector
+from strategy_optimizer.monitoring.metrics_collector import MetricsCollector
 
 
 @pytest.fixture

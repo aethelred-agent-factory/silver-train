@@ -1,8 +1,8 @@
-# tests/test_monitoring/test_alerting.py
+
 import os
 
 import pytest
-from src.monitoring.alerting import Alerting
+from strategy_optimizer.monitoring.alerting import Alerting
 
 
 @pytest.fixture

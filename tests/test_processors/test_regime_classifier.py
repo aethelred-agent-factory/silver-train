@@ -1,10 +1,10 @@
-# tests/test_processors/test_regime_classifier.py
+
 from datetime import datetime
 
 import pandas as pd
 import pytest
-from src.processors.indicator_engine import IndicatorEngine  # Needs to be mocked
-from src.processors.regime_classifier import RegimeClassifier
+from strategy_optimizer.processors.indicator_engine import IndicatorEngine  # Needs to be mocked
+from strategy_optimizer.processors.regime_classifier import RegimeClassifier
 
 
 @pytest.fixture

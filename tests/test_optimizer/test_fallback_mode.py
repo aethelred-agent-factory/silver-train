@@ -1,9 +1,9 @@
-# tests/test_optimizer/test_fallback_mode.py
+
 import random
 
 import pytest
-from src.backtesting.backtest_engine import BacktestEngine  # Needs to be mocked
-from src.optimizer.fallback_mode import FallbackMode
+from strategy_optimizer.backtesting.backtest_engine import BacktestEngine  # Needs to be mocked
+from strategy_optimizer.optimizer.fallback_mode import FallbackMode
 
 
 @pytest.fixture

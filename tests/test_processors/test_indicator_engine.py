@@ -1,10 +1,10 @@
-# tests/test_processors/test_indicator_engine.py
+
 from datetime import datetime, timedelta
 
 import pandas as pd
 import pytest
-from src.data_bus.market_data_bus import MarketDataBus
-from src.processors.indicator_engine import IndicatorEngine
+from strategy_optimizer.data_bus.market_data_bus import MarketDataBus
+from strategy_optimizer.processors.indicator_engine import IndicatorEngine
 
 
 @pytest.fixture

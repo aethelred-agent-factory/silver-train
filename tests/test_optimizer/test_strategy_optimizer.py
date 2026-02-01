@@ -1,11 +1,11 @@
-# tests/test_optimizer/test_strategy_optimizer.py
+
 from datetime import datetime
 
 import pytest
-from src.data_bus.event_bus import EventBus
-from src.data_bus.schemas import OptimizerProposal
-from src.optimizer.strategy_optimizer import StrategyOptimizer
-from src.processors.regime_classifier import RegimeClassifier
+from strategy_optimizer.data_bus.event_bus import EventBus
+from strategy_optimizer.data_bus.schemas import OptimizerProposal
+from strategy_optimizer.optimizer.strategy_optimizer import StrategyOptimizer
+from strategy_optimizer.processors.regime_classifier import RegimeClassifier
 
 
 @pytest.fixture

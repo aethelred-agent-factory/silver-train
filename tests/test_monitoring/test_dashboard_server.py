@@ -1,10 +1,10 @@
-# tests/test_monitoring/test_dashboard_server.py
+
 import pytest
 from httpx import AsyncClient
-from src.governance.incident_tracker import IncidentTracker
-from src.monitoring.dashboard_server import DashboardServer
-from src.storage.artifact_manager import ArtifactManager
-from src.storage.state_manager import StateManager
+from strategy_optimizer.governance.incident_tracker import IncidentTracker
+from strategy_optimizer.monitoring.dashboard_server import DashboardServer
+from strategy_optimizer.storage.artifact_manager import ArtifactManager
+from strategy_optimizer.storage.state_manager import StateManager
 
 
 @pytest.fixture(scope="function")
@@ -36,7 +36,7 @@ def dashboard_app(
     # Temporarily set port to avoid conflicts if running multiple tests
     test_config["system_config"]["monitoring"]["dashboard_port"] = 8001
     server = DashboardServer(
-        test_config, mock_state_manager, mock_artifact_manager, mock_incident_tracker
+        test_config, mock_state_manager, mock_artifact_.pyManager, mock_incident_tracker
     )
     return server.app
 
