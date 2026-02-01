@@ -2,14 +2,14 @@
 from datetime import datetime, timezone
 
 import pytest
-from audit.artifact_store import ArtifactStore
-from audit.audit_layer import AuditLayer
-from audit.causal_chain_validator import CausalChainValidator
-from audit.t1_checks import T1Checks
-from audit.t2_checks import T2Checks
-from audit.t3_checks import T3Checks
-from data_bus.event_bus import EventBus
-from data_bus.schemas import AuditAction, AuditVerdict, OptimizerProposal, TieredFinding
+from strategy_optimizer.audit.artifact_store import ArtifactStore
+from strategy_optimizer.audit.audit_layer import AuditLayer
+from strategy_optimizer.audit.causal_chain_validator import CausalChainValidator
+from strategy_optimizer.audit.t1_checks import T1Checks
+from strategy_optimizer.audit.t2_checks import T2Checks
+from strategy_optimizer.audit.t3_checks import T3Checks
+from strategy_optimizer.data_bus.event_bus import EventBus
+from strategy_optimizer.data_bus.schemas import AuditAction, AuditVerdict, OptimizerProposal, TieredFinding
 
 
 @pytest.fixture

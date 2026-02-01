@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 import pytest
-from src.data_bus.market_data_bus import MarketDataBus
+from strategy_optimizer.data_bus.market_data_bus import MarketDataBus
 
 
 class MockExchange:
@@ -35,7 +35,7 @@ class MockExchange:
 @pytest.fixture
 def mock_market_data_bus(test_config, temp_data_path, monkeypatch):
     test_config["system_config"]["paths"]["market_data"] = str(temp_data_path)
-    monkeypatch.setattr("src.data_bus.market_data_bus.ccxt.binance", MockExchange)
+    monkeypatch.setattr("strategy_optimizer.data_bus.market_data_bus.ccxt.binance", MockExchange)
     mdb = MarketDataBus(test_config)
     return mdb
 

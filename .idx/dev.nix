@@ -33,6 +33,6 @@
 
   # Set environment variables
   env = {
-    PYTHONPATH = ".:${pkgs.python311Packages.pytest}/lib/python3.11/site-packages";
+    PYTHONPATH = "./src:${pkgs.python311Packages.pytest}/lib/python3.11/site-packages";
   };
 }

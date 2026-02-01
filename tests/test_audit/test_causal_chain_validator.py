@@ -2,9 +2,9 @@
 from datetime import datetime, timedelta
 
 import pytest
-from src.audit.causal_chain_validator import CausalChainValidator
-from src.data_bus.schemas import CausalChainRef, OptimizerProposal
-from src.storage.artifact_manager import ArtifactManager  # For mocking
+from strategy_optimizer.audit.causal_chain_validator import CausalChainValidator
+from strategy_optimizer.data_bus.schemas import CausalChainRef, OptimizerProposal
+from strategy_optimizer.storage.artifact_manager import ArtifactManager  # For mocking
 
 
 @pytest.fixture

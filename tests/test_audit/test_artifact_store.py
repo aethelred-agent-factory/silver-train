@@ -3,10 +3,10 @@ import json
 from datetime import datetime, timezone
 
 import pytest
-from audit.artifact_store import ArtifactStore
-from data_bus.schemas import AuditAction, AuditVerdict, TieredFinding
-from src.utils.crypto_utils import CryptoUtils
-from storage.artifact_manager import ArtifactManager
+from strategy_optimizer.audit.artifact_store import ArtifactStore
+from strategy_optimizer.data_bus.schemas import AuditAction, AuditVerdict, TieredFinding
+from strategy_optimizer.utils.crypto_utils import CryptoUtils
+from strategy_optimizer.storage.artifact_manager import ArtifactManager
 
 
 @pytest.fixture

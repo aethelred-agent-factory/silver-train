@@ -125,7 +125,7 @@ class EventBus:
                 self.storage.delete_state(event_key)
                 return
             if time.time() - start_time > timeout:
-                raise TimeoutError(f"Timed out waiting for event '{event_name}')
+                raise TimeoutError(f"Timed out waiting for event '{event_name}'")
             time.sleep(1)
 
 # Note: This refactored version assumes that the StorageInterface might have a `delete_state` method.

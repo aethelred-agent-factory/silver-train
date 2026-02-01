@@ -2,8 +2,8 @@
 from datetime import datetime, timezone
 
 import pytest
-from src.data_bus.event_bus import EventBus
-from src.data_bus.schemas import (
+from strategy_optimizer.data_bus.event_bus import EventBus
+from strategy_optimizer.data_bus.schemas import (
     AuditAction,
     AuditVerdict,
     OptimizerProposal,

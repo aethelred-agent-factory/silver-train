@@ -4,10 +4,10 @@ from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
 import pytest
-from src.backtesting.backtest_engine import BacktestEngine
-from src.backtesting.walk_forward import WalkForward
-from src.data_bus.market_data_bus import MarketDataBus
-from src.data_bus.schemas import BacktestResult
+from strategy_optimizer.backtesting.backtest_engine import BacktestEngine
+from strategy_optimizer.backtesting.walk_forward import WalkForward
+from strategy_optimizer.data_bus.market_data_bus import MarketDataBus
+from strategy_optimizer.data_bus.schemas import BacktestResult
 
 
 @pytest.fixture

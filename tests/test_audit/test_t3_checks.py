@@ -1,7 +1,7 @@
 # tests/test_audit/test_t3_checks.py
 import pytest
-from src.audit.t3_checks import T3Checks
-from src.data_bus.schemas import OptimizerProposal, TieredFinding
+from strategy_optimizer.audit.t3_checks import T3Checks
+from strategy_optimizer.data_bus.schemas import OptimizerProposal, TieredFinding
 
 
 @pytest.fixture
