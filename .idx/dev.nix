@@ -2,45 +2,28 @@
 # see: https://firebase.google.com/docs/studio/customize-workspace
 { pkgs, ... }: {
   # Which nixpkgs channel to use.
-  channel = "unstable"; # or "unstable"
+  channel = "unstable";
 
   # Use https://search.nixos.org/packages to find packages
   packages = [
     pkgs.python311
     pkgs.python311Packages.pip
-    (pkgs.python311.withPackages (ps: [
-      ps.pydantic
-      ps.pyarrow
-      ps.sqlalchemy
-      # ps.ccxt # Temporarily removed due to build issues
-      ps.pyyaml
-      ps.numpy
-      ps.pandas
-      ps.pytest
-    ]))
+    pkgs.python311Packages.virtualenv
+    pkgs.python311Packages.pytest
+    pkgs.python311Packages.pytest-asyncio
+    pkgs.python311Packages.pydantic
+    pkgs.python311Packages.pyarrow
+    pkgs.python311Packages.sqlalchemy
+    pkgs.python311Packages.pyyaml
+    pkgs.python311Packages.numpy
+    pkgs.python311Packages.pandas
+    pkgs.python311Packages.aiohttp
+    pkgs.python311Packages.python-dotenv
+    pkgs.python311Packages.cryptography
   ];
 
-  # Folders to add to PATH
-  # path = [
-  #   "bin"
-  #   ".local/bin"
-  # ];
-
-  # Environment variables
-  # env = {
-  #   "VAR" = "value";
-  # };
-
-  # Scripts to run on workspace startup
-  # startup = {
-  #   # "example" = {
-  #   #   "command" = "echo 'Hello, world!'";
-  #   #   "background" = false;
-  #   # };
-  # };
-
-  # Ports to expose
-  # ports = {
-  #   "Vite" = 3000;
-  # };
+  # Set environment variables
+  env = {
+    PYTHONPATH = "${pkgs.python311Packages.pytest}/lib/python3.11/site-packages";
+  };
 }
