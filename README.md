@@ -1,4 +1,4 @@
-# Stradegy Optimizer
+# Silvertrain System
 
 A trading/strategy optimizer that supports backtesting and live (paper) trading.
 
@@ -18,5 +18,5 @@ A trading/strategy optimizer that supports backtesting and live (paper) trading.
 3.  **Run sanity checks:**
     ```bash
     pytest
-    python -m strategy_optimizer.src.main --help
+    python -m strategy_optimizer.main --help
     ```

@@ -1,6 +1,6 @@
-# Self-Auditing Strategy Optimizer
+# Silvertrain System
 
-This project implements a robust, modular, and self-auditing strategy optimizer designed for production-grade trading systems. It adheres to strict principles of immutability, causality, and separation of concerns to ensure safety, traceability, and reproducibility of all trading decisions.
+This project implements a robust, modular, and self-auditing trading system named Silvertrain System. It adheres to strict principles of immutability, causality, and separation of concerns to ensure safety, traceability, and reproducibility of all trading decisions.
 
 The system incorporates an independent Audit Layer that continuously validates optimizer proposals against a tiered set of rules (T1 for structural integrity, T2 for reasoning flaws, T3 for informational gaps). Based on audit verdicts, the system can block executions, apply restrictions, or request remediation, ensuring a human-in-the-loop governance model.
 
@@ -11,7 +11,7 @@ The system incorporates an independent Audit Layer that continuously validates o
 The project is structured with a clear separation of concerns, organized into several key modules:
 
 ```
-strategy-optimizer/
+silvertrain-system/
 │
 ├── README.md
 ├── requirements.txt                 # Python dependencies
@@ -99,8 +99,8 @@ strategy-optimizer/
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-org/strategy-optimizer.git
-    cd strategy-optimizer
+    git clone https://github.com/your-org/silvertrain-system.git
+    cd silvertrain-system
     ```
 
 2.  **Create and activate a virtual environment:**
