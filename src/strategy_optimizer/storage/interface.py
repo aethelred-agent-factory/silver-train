@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
+import pandas as pd
 
 class StorageInterface(ABC):
     
@@ -25,4 +26,12 @@ class StorageInterface(ABC):
     
     @abstractmethod
     def query_market_data(self, symbol: str, start: str, end: str) -> List[Dict]:
+        pass
+
+    @abstractmethod
+    def save_market_data(self, symbol: str, df: pd.DataFrame) -> bool:
+        pass
+
+    @abstractmethod
+    def execute_query(self, query: str, params: tuple = (), fetch: Optional[str] = None) -> Any:
         pass

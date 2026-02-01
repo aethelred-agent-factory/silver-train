@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 
 from .metrics_collector import MetricsCollector
+from data_bus.schemas import AuditVerdict
 
 
 class DashboardServer:
@@ -65,11 +66,13 @@ class DashboardServer:
 
         @self.app.get("/audit-artifacts/{audit_id}")
         async def get_audit_artifact(audit_id: str):
-            artifact = self.artifact_manager.download_artifact(f"audit_{audit_id}.json")
-            if not artifact:
+            artifact_dict = self.artifact_manager.load_artifact(f"audit_{audit_id}.json")
+            if not artifact_dict:
                 raise HTTPException(status_code=404, detail="Artifact not found")
-            # return AuditVerdict.model_validate_json(artifact)
-            return {"artifact_content": artifact}  # For now, return raw content
+            try:
+                return AuditVerdict(**artifact_dict)
+            except Exception:
+                return {"artifact_content": artifact_dict}
 
         @self.app.get("/audit-artifacts")
         async def list_audit_artifacts():

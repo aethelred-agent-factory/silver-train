@@ -2,7 +2,7 @@
 import os
 
 import pytest
-from src.storage.state_manager import StateManager
+from storage.state_manager import StateManager
 
 
 @pytest.fixture

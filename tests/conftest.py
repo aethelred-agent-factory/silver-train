@@ -7,9 +7,9 @@ from datetime import datetime, timezone
 import pytest
 import yaml
 
-from strategy_optimizer.storage.state_manager import StateManager
-from strategy_optimizer.utils.crypto_utils import CryptoUtils
-from strategy_optimizer.utils.time_utils import TimeUtils
+from storage.sqlite_storage import SqliteStorage
+from utils.crypto_utils import CryptoUtils
+from utils.time_utils import TimeUtils
 
 
 def load_all_config(config_dir="config"):
@@ -44,52 +44,42 @@ def test_config():
 
 
 import logging
+import sqlite3
 
 
 @pytest.fixture(scope="function")
-def in_memory_state_manager(test_config):
-    """Provides an in-memory SQLite StateManager for isolated tests."""
-    logging.info("Creating in-memory state manager")
-    # Create a copy of the config to avoid modifying the session-scoped fixture
-    config_copy = test_config.copy()
-    config_copy["system_config"]["paths"]["state_db"] = ":memory:"
-    sm = StateManager(config_copy)
-    # Initialize schema for the in-memory database
-    sm.execute_query(
-        """
-        CREATE TABLE IF NOT EXISTS event_bus_proposals (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            proposal_id TEXT NOT NULL UNIQUE,
-            payload TEXT NOT NULL,
-            status TEXT NOT NULL DEFAULT 'pending', -- pending, processing, done
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        );
-    """
-    )
-    sm.execute_query(
-        """
-        CREATE TABLE IF NOT EXISTS event_bus_verdicts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            verdict_id TEXT NOT NULL UNIQUE,
-            proposal_id TEXT NOT NULL,
-            payload TEXT NOT NULL,
-            status TEXT NOT NULL DEFAULT 'pending',
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        );
-    """
-    )
-    sm.execute_query(
+def in_memory_state_manager(test_config, tmp_path):
+    """Provides an in-memory SQLite Storage for isolated tests."""
+    logging.info("Creating in-memory storage backend")
+
+    db_path = ":memory:"
+    artifacts_path = str(tmp_path / "test_artifacts")
+    market_data_path = str(tmp_path / "test_market")
+
+    storage = SqliteStorage(db_path, artifacts_path, market_data_path)
+
+    # Initialize schema for tables used in legacy tests (if any still depend on direct SQL)
+    # Use the connection from storage to ensure it's the same in-memory DB
+    conn = storage._get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS parameter_history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             params_hash TEXT NOT NULL,
+            params_json TEXT NOT NULL,
             regime TEXT NOT NULL,
+            profit_pct REAL,
+            max_drawdown_pct REAL,
+            win_rate REAL,
+            total_trades INTEGER,
             result TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(params_hash, regime)
         );
-    """
+        """
     )
-    sm.execute_query(
+    cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS order_log (
             order_id TEXT PRIMARY KEY,
@@ -101,9 +91,9 @@ def in_memory_state_manager(test_config):
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             proposal_id TEXT
         );
-    """
+        """
     )
-    sm.execute_query(
+    cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS approval_tickets (
             ticket_id TEXT PRIMARY KEY,
@@ -115,9 +105,33 @@ def in_memory_state_manager(test_config):
             status TEXT, -- pending, approved, rejected, expired
             timeout_at DATETIME
         );
-    """
+        """
     )
-    sm.execute_query(
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS blacklist (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            params_hash TEXT NOT NULL UNIQUE,
+            params_json TEXT,
+            reason TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+        """
+    )
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS best_parameters (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            regime TEXT NOT NULL UNIQUE,
+            params_json TEXT NOT NULL,
+            profit_pct REAL,
+            max_drawdown_pct REAL,
+            iteration INTEGER,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+        """
+    )
+    cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS incidents (
             incident_id TEXT PRIMARY KEY,
@@ -129,9 +143,12 @@ def in_memory_state_manager(test_config):
             resolution TEXT,
             resolved_at DATETIME
         );
-    """
+        """
     )
-    return sm
+    conn.commit()
+    # Note: We don't close the connection here because it's in-memory and held by storage
+
+    return storage
 
 
 @pytest.fixture(scope="function")

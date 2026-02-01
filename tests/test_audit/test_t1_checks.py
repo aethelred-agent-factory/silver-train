@@ -2,8 +2,8 @@
 from datetime import datetime
 
 import pytest
-from strategy_optimizer.audit.t1_checks import T1Checks
-from strategy_optimizer.data_bus.schemas import OptimizerProposal, TieredFinding
+from audit.t1_checks import T1Checks
+from data_bus.schemas import OptimizerProposal, TieredFinding
 
 
 @pytest.fixture

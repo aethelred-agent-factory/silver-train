@@ -3,7 +3,7 @@ import time
 
 import ccxt
 import pytest
-from src.execution.exchange_adapter import ExchangeAdapter
+from execution.exchange_adapter import ExchangeAdapter
 
 
 @pytest.fixture

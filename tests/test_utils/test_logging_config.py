@@ -3,7 +3,7 @@ import logging
 import os
 
 import pytest
-from src.utils.logging_config import create_default_logging_config, setup_logging
+from utils.logging_config import create_default_logging_config, setup_logging
 
 
 @pytest.fixture(autouse=True)

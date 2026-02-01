@@ -6,6 +6,25 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "strategy_optimizer"
 version = "0.1"
+dependencies = [
+    "pydantic",
+    "pyarrow",
+    "sqlalchemy",
+    "ccxt",
+    "pyyaml",
+    "numpy",
+    "pandas",
+    "scipy",
+    "requests",
+    "python-dotenv",
+    "fastapi",
+    "uvicorn",
+    "prometheus-client",
+    "boto3",
+    "openai",
+    "pytest",
+    "supabase"
+]
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 import pytest
-from strategy_optimizer.data_bus.market_data_bus import MarketDataBus
-from strategy_optimizer.processors.indicator_engine import IndicatorEngine
+from data_bus.market_data_bus import MarketDataBus
+from processors.indicator_engine import IndicatorEngine
 
 
 @pytest.fixture

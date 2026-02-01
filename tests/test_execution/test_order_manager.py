@@ -1,8 +1,8 @@
 # tests/test_execution/test_order_manager.py
 import pytest
-from src.execution.exchange_adapter import ExchangeAdapter  # For mocking
-from src.execution.order_manager import OrderManager
-from src.storage.state_manager import StateManager
+from execution.exchange_adapter import ExchangeAdapter  # For mocking
+from execution.order_manager import OrderManager
+from storage.state_manager import StateManager
 
 
 @pytest.fixture

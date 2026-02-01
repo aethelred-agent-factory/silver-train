@@ -3,11 +3,11 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 import pytest
-from strategy_optimizer.backtesting.backtest_engine import BacktestEngine
-from strategy_optimizer.backtesting.performance_metrics import PerformanceMetrics
-from strategy_optimizer.backtesting.position_manager import PositionManager
-from strategy_optimizer.data_bus.schemas import BacktestResult
-from strategy_optimizer.optimizer.signal_generator import SignalGenerator
+from backtesting.backtest_engine import BacktestEngine
+from backtesting.performance_metrics import PerformanceMetrics
+from backtesting.position_manager import PositionManager
+from data_bus.schemas import BacktestResult
+from optimizer.signal_generator import SignalGenerator
 
 
 @pytest.fixture

@@ -2,8 +2,8 @@
 from datetime import datetime, timedelta
 
 import pytest
-from src.governance.approval_workflow import ApprovalWorkflow
-from src.storage.state_manager import StateManager
+from governance.approval_workflow import ApprovalWorkflow
+from storage.state_manager import StateManager
 
 
 @pytest.fixture

@@ -2,8 +2,8 @@
 from datetime import datetime, timezone
 
 import pytest
-from strategy_optimizer.data_bus.event_bus import EventBus
-from strategy_optimizer.data_bus.schemas import (
+from data_bus.event_bus import EventBus
+from data_bus.schemas import (
     AuditAction,
     AuditVerdict,
     OptimizerProposal,
@@ -36,6 +36,6 @@ def test_publish_and_subscribe_verdict(in_memory_state_manager):
         checksum="abc",
     )
     event_bus.publish_verdict(verdict)
-    retrieved_verdict = event_bus.subscribe_verdict()
+    retrieved_verdict = event_bus.subscribe_verdict("test_prop")
     assert retrieved_verdict == verdict
-    assert event_bus.subscribe_verdict() is None
+    assert event_bus.subscribe_verdict("test_prop") is None

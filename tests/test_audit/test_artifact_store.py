@@ -3,10 +3,10 @@ import json
 from datetime import datetime, timezone
 
 import pytest
-from strategy_optimizer.audit.artifact_store import ArtifactStore
-from strategy_optimizer.data_bus.schemas import AuditAction, AuditVerdict, TieredFinding
-from strategy_optimizer.utils.crypto_utils import CryptoUtils
-from strategy_optimizer.storage.artifact_manager import ArtifactManager
+from audit.artifact_store import ArtifactStore
+from data_bus.schemas import AuditAction, AuditVerdict, TieredFinding
+from utils.crypto_utils import CryptoUtils
+from storage.interface import StorageInterface
 
 
 @pytest.fixture
@@ -16,11 +16,8 @@ def crypto_utils():
 
 @pytest.fixture
 def mock_artifact_manager(mocker):
-    mock = mocker.Mock(spec=ArtifactManager)
-    mock.get_artifact_uri.return_value = "file:///mock/path/artifact.json"
-    mock.download_artifact.return_value = (
-        None  # Default for testing retrieve non-existent
-    )
+    mock = mocker.Mock(spec=StorageInterface)
+    mock.load_artifact.return_value = None  # Default for testing retrieve non-existent
     return mock
 
 
@@ -47,24 +44,21 @@ def sample_audit_verdict():
 
 
 def test_store_artifact(artifact_store, mock_artifact_manager, sample_audit_verdict):
-    mock_artifact_manager.upload_artifact.return_value = (
-        "file:///mock/path/artifact.json",
-        "dummy_checksum",
-    )
+    mock_artifact_manager.save_artifact.return_value = True
     verdict = artifact_store.store_artifact(sample_audit_verdict)
 
-    assert verdict.artifact_refs[0] == "file:///mock/path/artifact.json"
-    assert verdict.checksum == "dummy_checksum"
+    assert verdict.artifact_refs[0] == "artifact://audit_test_audit_id.json"
+    assert verdict.checksum != ""
 
-    mock_artifact_manager.upload_artifact.assert_called_once()
+    mock_artifact_manager.save_artifact.assert_called_once()
 
 
 def test_retrieve_artifact_not_found(artifact_store, mock_artifact_manager):
-    mock_artifact_manager.download_artifact.return_value = (None, None)
+    mock_artifact_manager.load_artifact.return_value = None
     verdict = artifact_store.retrieve_artifact("non_existent_audit")
     assert verdict is None
 
-    mock_artifact_manager.download_artifact.assert_called_once_with(
+    mock_artifact_manager.load_artifact.assert_called_once_with(
         "audit_non_existent_audit.json"
     )
 
@@ -72,10 +66,9 @@ def test_retrieve_artifact_not_found(artifact_store, mock_artifact_manager):
 def test_retrieve_artifact_found(
     artifact_store, mock_artifact_manager, sample_audit_verdict, crypto_utils
 ):
-    # Mock download_artifact to return a valid JSON string and checksum
-    verdict_json = sample_audit_verdict.model_dump_json()
-    checksum = crypto_utils.sha256_hash(verdict_json.encode("utf-8"))
-    mock_artifact_manager.download_artifact.return_value = (verdict_json, checksum)
+    # Mock load_artifact to return a valid dict
+    verdict_dict = sample_audit_verdict.model_dump()
+    mock_artifact_manager.load_artifact.return_value = verdict_dict
 
     verdict = artifact_store.retrieve_artifact(sample_audit_verdict.audit_id)
     assert verdict is not None

@@ -1,6 +1,6 @@
 # tests/test_utils/test_crypto_utils.py
 import pytest
-from src.utils.crypto_utils import CryptoUtils
+from utils.crypto_utils import CryptoUtils
 
 
 @pytest.fixture

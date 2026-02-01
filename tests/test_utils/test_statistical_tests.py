@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-from src.utils.statistical_tests import StatisticalTests
+from utils.statistical_tests import StatisticalTests
 
 
 @pytest.fixture

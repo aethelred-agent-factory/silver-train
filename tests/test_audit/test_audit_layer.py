@@ -2,14 +2,14 @@
 from datetime import datetime, timezone
 
 import pytest
-from strategy_optimizer.audit.artifact_store import ArtifactStore
-from strategy_optimizer.audit.audit_layer import AuditLayer
-from strategy_optimizer.audit.causal_chain_validator import CausalChainValidator
-from strategy_optimizer.audit.t1_checks import T1Checks
-from strategy_optimizer.audit.t2_checks import T2Checks
-from strategy_optimizer.audit.t3_checks import T3Checks
-from strategy_optimizer.data_bus.event_bus import EventBus
-from strategy_optimizer.data_bus.schemas import AuditAction, AuditVerdict, OptimizerProposal, TieredFinding
+from audit.artifact_store import ArtifactStore
+from audit.audit_layer import AuditLayer
+from audit.causal_chain_validator import CausalChainValidator
+from audit.t1_checks import T1Checks
+from audit.t2_checks import T2Checks
+from audit.t3_checks import T3Checks
+from data_bus.event_bus import EventBus
+from data_bus.schemas import AuditAction, AuditVerdict, OptimizerProposal, TieredFinding
 
 
 @pytest.fixture
@@ -103,7 +103,7 @@ def test_audit_proposal_allow(audit_layer, event_bus_audit, sample_proposal):
     assert not verdict.tiered_findings
 
     # Check if verdict was published
-    published_verdict = event_bus_audit.subscribe_verdict()
+    published_verdict = event_bus_audit.subscribe_verdict(sample_proposal.proposal_id)
     assert published_verdict == verdict
 
 
@@ -123,6 +123,10 @@ def test_audit_proposal_block_t1(
     assert verdict.action.restrictions["reason"] == "T1_Contradiction"
     assert len(verdict.tiered_findings) == 1
 
+    # Check if verdict was published
+    published_verdict = event_bus_audit.subscribe_verdict(sample_proposal.proposal_id)
+    assert published_verdict == verdict
+
 
 def test_audit_proposal_restrict_t2(
     audit_layer, event_bus_audit, mock_t2_checks, sample_proposal
@@ -139,3 +143,7 @@ def test_audit_proposal_restrict_t2(
     assert verdict.action.type == "ALLOW_WITH_RESTRICTION"
     assert verdict.action.restrictions["max_order_size_pct"] == 0.25
     assert len(verdict.tiered_findings) == 1
+
+    # Check if verdict was published
+    published_verdict = event_bus_audit.subscribe_verdict(sample_proposal.proposal_id)
+    assert published_verdict == verdict
