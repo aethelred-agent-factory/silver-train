@@ -2,31 +2,26 @@ import logging
 import uuid
 from datetime import datetime, timedelta
 
+from storage.interface import StorageInterface
+
+APPROVAL_TICKETS_KEY = "approval_tickets"
 
 class ApprovalWorkflow:
     """
     Manages a human-in-the-loop approval system for critical actions.
     """
 
-    def __init__(self, config, state_manager):
+    def __init__(self, config, storage: StorageInterface):
         self.config = config
-        self.state_manager = state_manager
-        # Ensure approval tickets table exists
-        self.state_manager.execute_query(
-            """
-            CREATE TABLE IF NOT EXISTS approval_tickets (
-                ticket_id TEXT PRIMARY KEY,
-                incident_id TEXT,
-                description TEXT,
-                requested_at DATETIME,
-                approved_by TEXT,
-                approved_at DATETIME,
-                status TEXT, -- pending, approved, rejected, expired
-                timeout_at DATETIME
-            );
-        """
-        )
+        self.storage = storage
         logging.info("Initialized ApprovalWorkflow.")
+
+    def _load_tickets(self) -> list:
+        tickets = self.storage.load_state(APPROVAL_TICKETS_KEY)
+        return tickets if tickets is not None else []
+
+    def _save_tickets(self, tickets: list):
+        self.storage.save_state(APPROVAL_TICKETS_KEY, tickets)
 
     def request_approval(
         self, incident_id: str, description: str, timeout_hours: int = 4
@@ -38,17 +33,19 @@ class ApprovalWorkflow:
         requested_at = datetime.utcnow()
         timeout_at = requested_at + timedelta(hours=timeout_hours)
 
-        self.state_manager.execute_query(
-            "INSERT INTO approval_tickets (ticket_id, incident_id, description, requested_at, status, timeout_at) VALUES (?, ?, ?, ?, ?, ?)",
-            (
-                ticket_id,
-                incident_id,
-                description,
-                requested_at.isoformat(),
-                "pending",
-                timeout_at.isoformat(),
-            ),
-        )
+        tickets = self._load_tickets()
+        tickets.append({
+            "ticket_id": ticket_id,
+            "incident_id": incident_id,
+            "description": description,
+            "requested_at": requested_at.isoformat(),
+            "approved_by": None,
+            "approved_at": None,
+            "status": "pending", # pending, approved, rejected, expired
+            "timeout_at": timeout_at.isoformat(),
+        })
+        self._save_tickets(tickets)
+
         logging.warning(
             f"Approval requested for incident {incident_id}. Ticket ID: {ticket_id}"
         )
@@ -58,16 +55,23 @@ class ApprovalWorkflow:
         """
         Approves a pending ticket.
         """
-        current_status = self._get_ticket_status(ticket_id)
-        if current_status == "pending":
-            self.state_manager.execute_query(
-                "UPDATE approval_tickets SET status = ?, approved_by = ?, approved_at = ? WHERE ticket_id = ?",
-                ("approved", approver, datetime.utcnow().isoformat(), ticket_id),
-            )
+        tickets = self._load_tickets()
+        ticket_found = False
+        for ticket in tickets:
+            if ticket["ticket_id"] == ticket_id and ticket["status"] == "pending":
+                ticket["status"] = "approved"
+                ticket["approved_by"] = approver
+                ticket["approved_at"] = datetime.utcnow().isoformat()
+                ticket_found = True
+                break
+        
+        if ticket_found:
+            self._save_tickets(tickets)
             logging.info(f"Approval ticket {ticket_id} approved by {approver}.")
             return True
+        
         logging.warning(
-            f"Cannot approve ticket {ticket_id}. Current status: {current_status}"
+            f"Cannot approve ticket {ticket_id}. It might not exist or is not in 'pending' status."
         )
         return False
 
@@ -75,16 +79,23 @@ class ApprovalWorkflow:
         """
         Rejects a pending ticket.
         """
-        current_status = self._get_ticket_status(ticket_id)
-        if current_status == "pending":
-            self.state_manager.execute_query(
-                "UPDATE approval_tickets SET status = ?, approved_by = ?, approved_at = ? WHERE ticket_id = ?",
-                ("rejected", approver, datetime.utcnow().isoformat(), ticket_id),
-            )
+        tickets = self._load_tickets()
+        ticket_found = False
+        for ticket in tickets:
+            if ticket["ticket_id"] == ticket_id and ticket["status"] == "pending":
+                ticket["status"] = "rejected"
+                ticket["approved_by"] = approver # approver is the one rejecting
+                ticket["approved_at"] = datetime.utcnow().isoformat()
+                ticket_found = True
+                break
+
+        if ticket_found:
+            self._save_tickets(tickets)
             logging.warning(f"Approval ticket {ticket_id} rejected by {approver}.")
             return True
+
         logging.warning(
-            f"Cannot reject ticket {ticket_id}. Current status: {current_status}"
+            f"Cannot reject ticket {ticket_id}. It might not exist or is not in 'pending' status."
         )
         return False
 
@@ -93,22 +104,12 @@ class ApprovalWorkflow:
         Checks the current status of an approval ticket.
         Returns 'pending', 'approved', 'rejected', or 'expired'.
         """
-        query = "SELECT status, timeout_at FROM approval_tickets WHERE ticket_id = ?"
-        result = self.state_manager.execute_query(query, (ticket_id,), fetch="one")
-        if result:
-            status, timeout_at_str = result
-            if status == "pending" and datetime.utcnow() > datetime.fromisoformat(
-                timeout_at_str
-            ):
-                self.state_manager.execute_query(
-                    "UPDATE approval_tickets SET status = ? WHERE ticket_id = ?",
-                    ("expired", ticket_id),
-                )
-                return "expired"
-            return status
+        tickets = self._load_tickets()
+        for ticket in tickets:
+            if ticket["ticket_id"] == ticket_id:
+                if ticket["status"] == "pending" and datetime.utcnow() > datetime.fromisoformat(ticket["timeout_at"]):
+                    ticket["status"] = "expired"
+                    self._save_tickets(tickets)
+                    return "expired"
+                return ticket["status"]
         return None
-
-    def _get_ticket_status(self, ticket_id: str) -> str:
-        query = "SELECT status FROM approval_tickets WHERE ticket_id = ?"
-        result = self.state_manager.execute_query(query, (ticket_id,), fetch="one")
-        return result[0] if result else None

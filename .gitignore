@@ -2,22 +2,28 @@
 venv/
 env/
 .venv/
+ENV/
 
-# Python cache
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
 
-# Data directories
-data/state/*.db
-data/artifacts/*.json
-data/artifacts/*.sha256
-logs/*.log
+# Distribution / packaging
+build/
+dist/
+downloads/
+*.egg-info/
+MANIFEST
 
-# Archives (if regenerable)
-archives/*.tar.gz
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
 
 # IDE
 .vscode/
@@ -29,6 +35,7 @@ archives/*.tar.gz
 # OS
 .DS_Store
 Thumbs.db
+.directory
 
 # Testing
 .pytest_cache/
@@ -36,7 +43,35 @@ Thumbs.db
 htmlcov/
 .tox/
 
-# Build artifacts
-build/
-dist/
-*.egg-info/
+# Logs
+*.log
+logs/
+*.log.*
+
+# Local development database
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Local development artifacts  
+data/state/
+data/artifacts/*.json
+data/artifacts/*.sha256
+
+# Keep market data structure but ignore contents
+data/market/*
+!data/market/.gitkeep
+
+# Archives
+archives/*.tar.gz
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Future: Supabase (uncomment when migrating)
+# .supabase/
+# supabase/functions/.env
+# supabase/functions/node_modules/

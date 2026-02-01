@@ -16,54 +16,31 @@
       ps.pyyaml
       ps.numpy
       ps.pandas
-      ps.scipy
-      ps.requests
-      ps.python-dotenv
-      ps.fastapi
-      ps.uvicorn
-      ps.prometheus-client
-      ps.boto3
-      ps.openai
+      ps.pytest
     ]))
   ];
 
-  # Sets environment variables in the workspace
-  env = {};
-  idx = {
-    # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
-    extensions = [
-      # "vscodevim.vim"
-    ];
+  # Folders to add to PATH
+  # path = [
+  #   "bin"
+  #   ".local/bin"
+  # ];
 
-    # Enable previews
-    previews = {
-      enable = true;
-      previews = {
-        # web = {
-        #   # Example: run "npm run dev" with PORT set to IDX's defined port for previews,
-        #   # and show it in IDX's web preview panel
-        #   command = ["npm" "run" "dev"];
-        #   manager = "web";
-        #   env = {
-        #     # Environment variables to set for your server
-        #     PORT = "$PORT";
-        #   };
-        # };
-      };
-    };
+  # Environment variables
+  # env = {
+  #   "VAR" = "value";
+  # };
 
-    # Workspace lifecycle hooks
-    workspace = {
-      # Runs when a workspace is first created
-      onCreate = {
-        # Example: install JS dependencies from NPM
-        # npm-install = "npm install";
-      };
-      # Runs when the workspace is (re)started
-      onStart = {
-        # Example: start a background task to watch and re-build backend code
-        # watch-backend = "npm run watch-backend";
-      };
-    };
-  };
+  # Scripts to run on workspace startup
+  # startup = {
+  #   # "example" = {
+  #   #   "command" = "echo 'Hello, world!'";
+  #   #   "background" = false;
+  #   # };
+  # };
+
+  # Ports to expose
+  # ports = {
+  #   "Vite" = 3000;
+  # };
 }

@@ -50,7 +50,7 @@ from processors.indicator_engine import IndicatorEngine
 from processors.regime_classifier import RegimeClassifier
 from storage.artifact_manager import ArtifactManager
 from storage.replay_engine import ReplayEngine
-from storage.state_manager import StateManager
+from storage.factory import get_storage_backend
 from utils.crypto_utils import CryptoUtils
 from utils.logging_config import setup_logging
 from utils.statistical_tests import StatisticalTests
@@ -146,18 +146,18 @@ def main():
     logging.info("Initializing components...")
 
     # Core Utilities
-    state_manager = StateManager(config)
+    storage_backend = get_storage_backend()
     crypto_utils = CryptoUtils()
 
     # Governance
-    kill_switch = KillSwitch(state_manager)
-    incident_tracker = IncidentTracker(config, state_manager)
-    approval_workflow = ApprovalWorkflow(config, state_manager)
+    kill_switch = KillSwitch(storage_backend)
+    incident_tracker = IncidentTracker(config, storage_backend)
+    approval_workflow = ApprovalWorkflow(config, storage_backend)
     restriction_enforcer = RestrictionEnforcer(config)
     emergency_manager = EmergencyManager(config, incident_tracker, approval_workflow)
 
     # Data & Execution Layer
-    event_bus = EventBus(state_manager)
+    event_bus = EventBus(storage_backend)
     if args.mode == "paper":
         adapter = PaperAdapter(
             initial_balance=config.get("system_config", {}).get(
@@ -197,7 +197,7 @@ def main():
     # Optimizer Components
     llm_interface = LLMInterface(config)
     fallback_mode = FallbackMode(config, backtest_engine)
-    parameter_memory = ParameterMemory(state_manager)
+    parameter_memory = ParameterMemory(storage_backend)
     signal_generator = SignalGenerator(config, indicator_engine, regime_classifier)
     backtest_engine.signal_generator = signal_generator  # Resolve circular dependency
 
@@ -232,14 +232,14 @@ def main():
     )
 
     # Monitoring
-    metrics_collector = MetricsCollector(state_manager, performance_metrics)
+    metrics_collector = MetricsCollector(storage_backend, performance_metrics)
     dashboard_server = DashboardServer(
-        config, state_manager, artifact_manager, incident_tracker, metrics_collector
+        config, storage_backend, artifact_manager, incident_tracker, metrics_collector
     )
 
     # Execution & Governance
-    order_manager = OrderManager(config, adapter, state_manager)
-    execution_engine = ExecutionEngine(config, order_manager, state_manager, portfolio)
+    order_manager = OrderManager(config, adapter, storage_backend)
+    execution_engine = ExecutionEngine(config, order_manager, storage_backend, portfolio)
 
     logging.info("All components initialized.")
 

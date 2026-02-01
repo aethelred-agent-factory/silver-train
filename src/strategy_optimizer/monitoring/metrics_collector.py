@@ -1,28 +1,35 @@
 import logging
 
 from backtesting.performance_metrics import PerformanceMetrics
-from storage.state_manager import StateManager
+from storage.interface import StorageInterface
 
 
 class MetricsCollector:
     """
-    Collects and exposes real-time metrics for the dashboard.
+    Collects and stores various system metrics in the state database.
     """
 
-    def __init__(
-        self, state_manager: StateManager, performance_metrics: PerformanceMetrics
-    ):
-        self.state_manager = state_manager
+    def __init__(self, storage: StorageInterface, performance_metrics: PerformanceMetrics):
+        self.storage = storage
         self.performance_metrics = performance_metrics
         logging.info("Initialized MetricsCollector.")
 
-    def get_latest_metrics(self):
+    def collect_and_store(self):
         """
-        Retrieves the latest performance metrics from the backtest reports.
+        Collects metrics from various components and stores them.
         """
-        query = "SELECT report FROM backtest_reports ORDER BY end_date DESC LIMIT 1"
-        result = self.state_manager.execute_query(query, fetch="one")
-        if result and result[0]:
-            # The report is stored as a JSON string
-            return self.performance_metrics.parse_report(result[0])
-        return {}
+        metrics = {
+            "performance": self.performance_metrics.get_all_metrics(),
+            # Add other metrics here (e.g., from IncidentTracker, OrderManager)
+        }
+
+        for key, value in metrics.items():
+            self.storage.save_state(f"metrics_{key}", value)
+
+        logging.info("Collected and stored system metrics.")
+
+    def get_metrics(self, key: str) -> dict:
+        """
+        Retrieves a specific set of metrics from the database.
+        """
+        return self.storage.load_state(f"metrics_{key}")

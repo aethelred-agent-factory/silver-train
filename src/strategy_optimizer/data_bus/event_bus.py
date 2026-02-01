@@ -1,168 +1,133 @@
 import logging
 import time
-from datetime import datetime
-from typing import Optional
+import json
+from typing import Optional, List
 
 from data_bus.schemas import AuditVerdict, OptimizerProposal
-from storage.state_manager import StateManager
+from storage.interface import StorageInterface
 
+PROPOSALS_PENDING_KEY = "event_bus:proposals:pending"
+PROPOSALS_PROCESSING_KEY = "event_bus:proposals:processing"
+VERDICTS_KEY_PREFIX = "event_bus:verdict:"
+LATEST_VERDICT_ID_KEY = "event_bus:latest_verdict_id"
+EVENTS_KEY_PREFIX = "event_bus:event:"
 
 class EventBus:
     """
-    A persistent event bus backed by the StateManager (SQLite) for robust communication
+    A persistent event bus backed by the StorageInterface for robust communication
     between the optimizer and the audit layer.
     """
 
-    def __init__(self, state_manager: StateManager):
-        self.state_manager = state_manager
-        # Ensure tables exist
-        self._initialize_schema()
+    def __init__(self, storage: StorageInterface):
+        self.storage = storage
         logging.info("Initialized persistent EventBus.")
-
-    def _initialize_schema(self):
-        """Creates the necessary tables for the event bus."""
-        self.state_manager.execute_query(
-            """
-            CREATE TABLE IF NOT EXISTS event_bus_proposals (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                proposal_id TEXT NOT NULL UNIQUE,
-                payload TEXT NOT NULL,
-                status TEXT NOT NULL DEFAULT 'pending', -- pending, processing, done
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            );
-        """
-        )
-        self.state_manager.execute_query(
-            """
-            CREATE TABLE IF NOT EXISTS event_bus_verdicts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                verdict_id TEXT NOT NULL UNIQUE,
-                proposal_id TEXT NOT NULL,
-                payload TEXT NOT NULL,
-                status TEXT NOT NULL DEFAULT 'pending',
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            );
-        """
-        )
-        self.state_manager.execute_query(
-            """
-            CREATE TABLE IF NOT EXISTS event_bus_events (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                event_name TEXT NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            );
-        """
-        )
 
     def publish_proposal(self, proposal: OptimizerProposal):
         """Publishes an optimizer proposal to the persistent queue."""
-        payload = proposal.json()
-        query = "INSERT INTO event_bus_proposals (proposal_id, payload) VALUES (?, ?)"
-        self.state_manager.execute_query(query, (proposal.proposal_id, payload))
-        logging.info(
-            f"Published proposal {proposal.proposal_id} to the persistent event bus."
-        )
+        proposal_key = f"proposal:{proposal.proposal_id}"
+        self.storage.save_state(proposal_key, proposal.dict())
+
+        pending_proposals = self.storage.load_state(PROPOSALS_PENDING_KEY) or []
+        pending_proposals.append(proposal.proposal_id)
+        self.storage.save_state(PROPOSALS_PENDING_KEY, pending_proposals)
+
+        logging.info(f"Published proposal {proposal.proposal_id} to the event bus.")
 
     def subscribe_proposal(self) -> Optional[OptimizerProposal]:
         """
-        Subscribes to an optimizer proposal, marking it as 'processing' to prevent re-delivery.
+        Subscribes to an optimizer proposal, moving it from 'pending' to 'processing'.
         """
-        query_select = "SELECT id, payload FROM event_bus_proposals WHERE status = 'pending' ORDER BY created_at ASC LIMIT 1"
-        result = self.state_manager.execute_query(query_select, fetch="one")
-
-        if not result:
+        pending_proposals = self.storage.load_state(PROPOSALS_PENDING_KEY) or []
+        if not pending_proposals:
             return None
 
-        event_id, payload = result
-        query_update = (
-            "UPDATE event_bus_proposals SET status = 'processing' WHERE id = ?"
-        )
-        self.state_manager.execute_query(query_update, (event_id,))
+        proposal_id = pending_proposals.pop(0)
+        self.storage.save_state(PROPOSALS_PENDING_KEY, pending_proposals)
 
-        proposal = OptimizerProposal.parse_raw(payload)
-        logging.info(
-            f"Subscribed to proposal {proposal.proposal_id} from the persistent event bus."
-        )
-        return proposal
+        processing_proposals = self.storage.load_state(PROPOSALS_PROCESSING_KEY) or []
+        processing_proposals.append(proposal_id)
+        self.storage.save_state(PROPOSALS_PROCESSING_KEY, processing_proposals)
+
+        proposal_data = self.storage.load_state(f"proposal:{proposal_id}")
+        if proposal_data:
+            logging.info(f"Subscribed to proposal {proposal_id} from the event bus.")
+            return OptimizerProposal(**proposal_data)
+        return None
 
     def acknowledge_proposal(self, proposal_id: str):
-        """Marks a proposal as 'done' after it has been fully processed (audited)."""
-        query = "UPDATE event_bus_proposals SET status = 'done' WHERE proposal_id = ?"
-        self.state_manager.execute_query(query, (proposal_id,))
-        logging.debug(f"Acknowledged proposal {proposal_id}.")
+        """Removes a proposal from the 'processing' list after it's been audited."""
+        processing_proposals = self.storage.load_state(PROPOSALS_PROCESSING_KEY) or []
+        if proposal_id in processing_proposals:
+            processing_proposals.remove(proposal_id)
+            self.storage.save_state(PROPOSALS_PROCESSING_KEY, processing_proposals)
+            # Optionally, delete the proposal data itself
+            self.storage.delete_state(f"proposal:{proposal_id}")
+            logging.debug(f"Acknowledged proposal {proposal_id}.")
 
     def publish_verdict(self, verdict: AuditVerdict):
-        """Publishes an audit verdict to the persistent queue."""
-        payload = verdict.json()
-        query = "INSERT INTO event_bus_verdicts (verdict_id, proposal_id, payload) VALUES (?, ?, ?)"
-        self.state_manager.execute_query(
-            query, (verdict.audit_id, verdict.proposal_id, payload)
-        )
-        logging.info(
-            f"Published verdict {verdict.audit_id} for proposal {verdict.proposal_id}."
-        )
+        """Publishes an audit verdict."""
+        verdict_key = f"{VERDICTS_KEY_PREFIX}{verdict.audit_id}"
+        self.storage.save_state(verdict_key, verdict.dict())
 
-    def subscribe_verdict(
-        self, proposal_id: Optional[str] = None
-    ) -> Optional[AuditVerdict]:
-        """
-        Subscribes to an audit verdict. If `proposal_id` is provided, returns verdict for that proposal,
-        otherwise returns the next pending verdict available.
-        """
-        if proposal_id:
-            query = "SELECT payload FROM event_bus_verdicts WHERE proposal_id = ? AND status = 'pending' LIMIT 1"
-            result = self.state_manager.execute_query(
-                query, (proposal_id,), fetch="one"
-            )
-        else:
-            query = "SELECT payload FROM event_bus_verdicts WHERE status = 'pending' ORDER BY created_at ASC LIMIT 1"
-            result = self.state_manager.execute_query(query, fetch="one")
+        # Create an index for proposal_id -> verdict_id
+        proposal_verdict_key = f"{VERDICTS_KEY_PREFIX}for_proposal:{verdict.proposal_id}"
+        self.storage.save_state(proposal_verdict_key, verdict.audit_id)
+        
+        # Track the latest verdict
+        self.storage.save_state(LATEST_VERDICT_ID_KEY, verdict.audit_id)
 
-        if not result:
+        logging.info(f"Published verdict {verdict.audit_id} for proposal {verdict.proposal_id}.")
+
+    def subscribe_verdict(self, proposal_id: str) -> Optional[AuditVerdict]:
+        """Subscribes to a verdict for a specific proposal."""
+        proposal_verdict_key = f"{VERDICTS_KEY_PREFIX}for_proposal:{proposal_id}"
+        verdict_id = self.storage.load_state(proposal_verdict_key)
+
+        if not verdict_id:
             return None
 
-        payload = result[0]
-        verdict = AuditVerdict.parse_raw(payload)
+        verdict_key = f"{VERDICTS_KEY_PREFIX}{verdict_id}"
+        verdict_data = self.storage.load_state(verdict_key)
 
-        # Mark as done
-        query_update = (
-            "UPDATE event_bus_verdicts SET status = 'done' WHERE verdict_id = ?"
-        )
-        self.state_manager.execute_query(query_update, (verdict.audit_id,))
-
-        logging.info(
-            f"Subscribed to verdict {verdict.audit_id} for proposal {proposal_id}."
-        )
-        return verdict
-
+        if verdict_data:
+            # After subscribing, we can remove the verdict and its index
+            self.storage.delete_state(verdict_key)
+            self.storage.delete_state(proposal_verdict_key)
+            logging.info(f"Subscribed to verdict {verdict_id} for proposal {proposal_id}.")
+            return AuditVerdict(**verdict_data)
+        return None
+        
     def get_latest_verdict(self) -> Optional[AuditVerdict]:
-        """Retrieves the most recent audit verdict from the event bus."""
-        query = (
-            "SELECT payload FROM event_bus_verdicts ORDER BY created_at DESC LIMIT 1"
-        )
-        result = self.state_manager.execute_query(query, fetch="one")
-
-        if not result:
+        """Retrieves the most recent audit verdict."""
+        latest_verdict_id = self.storage.load_state(LATEST_VERDICT_ID_KEY)
+        if not latest_verdict_id:
             return None
-
-        payload = result[0]
-        verdict = AuditVerdict.parse_raw(payload)
-        return verdict
+        
+        verdict_key = f"{VERDICTS_KEY_PREFIX}{latest_verdict_id}"
+        verdict_data = self.storage.load_state(verdict_key)
+        if verdict_data:
+            return AuditVerdict(**verdict_data)
+        return None
 
     def publish_event(self, event_name: str):
-        """Publishes a generic event to the event bus."""
-        query = "INSERT INTO event_bus_events (event_name) VALUES (?)"
-        self.state_manager.execute_query(query, (event_name,))
-        logging.info(f"Published event {event_name} to the persistent event bus.")
+        """Publishes a generic event."""
+        event_key = f"{EVENTS_KEY_PREFIX}{event_name}"
+        self.storage.save_state(event_key, {"timestamp": time.time()})
+        logging.info(f"Published event '{event_name}'.")
 
     def wait_for_event(self, event_name: str, timeout: int = 10):
         """Waits for a specific event to be published."""
         start_time = time.time()
+        event_key = f"{EVENTS_KEY_PREFIX}{event_name}"
         while True:
-            query = "SELECT id FROM event_bus_events WHERE event_name = ?"
-            result = self.state_manager.execute_query(query, (event_name,), fetch="one")
-            if result:
+            if self.storage.load_state(event_key):
+                # Clean up the event after it's been caught
+                self.storage.delete_state(event_key)
                 return
             if time.time() - start_time > timeout:
-                raise TimeoutError(f"Timed out waiting for event {event_name}")
+                raise TimeoutError(f"Timed out waiting for event '{event_name}')
             time.sleep(1)
+
+# Note: This refactored version assumes that the StorageInterface might have a `delete_state` method.
+# If it doesn't, we can simply save `None` to the key to "delete" it.
+# I will add a `delete_state` to the interface and implementation.

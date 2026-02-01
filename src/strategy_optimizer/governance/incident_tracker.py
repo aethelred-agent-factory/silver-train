@@ -2,31 +2,26 @@ import logging
 import uuid
 from datetime import datetime
 
+from storage.interface import StorageInterface
+
+INCIDENTS_KEY = "incidents"
 
 class IncidentTracker:
     """
     Tracks T1 incidents and their resolutions in the state database.
     """
 
-    def __init__(self, config, state_manager):
+    def __init__(self, config, storage: StorageInterface):
         self.config = config
-        self.state_manager = state_manager
-        # Ensure incident log table exists
-        self.state_manager.execute_query(
-            """
-            CREATE TABLE IF NOT EXISTS incidents (
-                incident_id TEXT PRIMARY KEY,
-                type TEXT,
-                details TEXT,
-                proposal_id TEXT,
-                timestamp DATETIME,
-                status TEXT, -- active, resolved
-                resolution TEXT,
-                resolved_at DATETIME
-            );
-        """
-        )
+        self.storage = storage
         logging.info("Initialized IncidentTracker.")
+
+    def _load_incidents(self) -> list:
+        incidents = self.storage.load_state(INCIDENTS_KEY)
+        return incidents if incidents is not None else []
+
+    def _save_incidents(self, incidents: list):
+        self.storage.save_state(INCIDENTS_KEY, incidents)
 
     def log_incident(self, type: str, details: str, proposal_id: str = None) -> str:
         """
@@ -35,10 +30,19 @@ class IncidentTracker:
         incident_id = str(uuid.uuid4())
         timestamp = datetime.utcnow().isoformat()
 
-        self.state_manager.execute_query(
-            "INSERT INTO incidents (incident_id, type, details, proposal_id, timestamp, status) VALUES (?, ?, ?, ?, ?, ?)",
-            (incident_id, type, details, proposal_id, timestamp, "active"),
-        )
+        incidents = self._load_incidents()
+        incidents.append({
+            "incident_id": incident_id,
+            "type": type,
+            "details": details,
+            "proposal_id": proposal_id,
+            "timestamp": timestamp,
+            "status": "active",
+            "resolution": None,
+            "resolved_at": None,
+        })
+        self._save_incidents(incidents)
+
         logging.critical(f"Incident logged: {type} - {details} (ID: {incident_id})")
         return incident_id
 
@@ -47,26 +51,29 @@ class IncidentTracker:
         Marks an active incident as resolved with a resolution message.
         """
         resolved_at = datetime.utcnow().isoformat()
-        self.state_manager.execute_query(
-            "UPDATE incidents SET status = ?, resolution = ?, resolved_at = ? WHERE incident_id = ?",
-            ("resolved", resolution, resolved_at, incident_id),
-        )
+        incidents = self._load_incidents()
+        for incident in incidents:
+            if incident["incident_id"] == incident_id:
+                incident["status"] = "resolved"
+                incident["resolution"] = resolution
+                incident["resolved_at"] = resolved_at
+                break
+        self._save_incidents(incidents)
         logging.info(f"Incident {incident_id} marked as resolved.")
 
     def get_active_incidents(self) -> list:
         """
         Retrieves all currently active incidents.
         """
-        query = "SELECT * FROM incidents WHERE status = 'active'"
-        return self.state_manager.execute_query(query, fetch="all")
+        incidents = self._load_incidents()
+        return [incident for incident in incidents if incident["status"] == "active"]
 
     def get_incident_history(self, incident_id: str = None) -> list:
         """
         Retrieves incident history, optionally for a specific incident.
         """
+        incidents = self._load_incidents()
         if incident_id:
-            query = "SELECT * FROM incidents WHERE incident_id = ?"
-            return self.state_manager.execute_query(query, (incident_id,), fetch="all")
+            return [incident for incident in incidents if incident["incident_id"] == incident_id]
         else:
-            query = "SELECT * FROM incidents"
-            return self.state_manager.execute_query(query, fetch="all")
+            return incidents
