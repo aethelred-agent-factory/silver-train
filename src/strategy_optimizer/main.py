@@ -107,10 +107,10 @@ def audit_log(order, simulated_balance):
 def main():
     """
     Initializes all components and starts the main orchestration loops for
-    the strategy optimizer and the audit layer.
+    the Silvertrain System.
     """
     # 1. Setup & Configuration
-    parser = argparse.ArgumentParser(description="Strategy Optimizer")
+    parser = argparse.ArgumentParser(description="Silvertrain System")
     parser.add_argument(
         "--mode",
         type=str,
@@ -123,7 +123,23 @@ def main():
     setup_logging()
     load_dotenv(dotenv_path="strategy_optimizer/.env")
     config = load_all_config()
-    logging.info("Starting the Self-Auditing Strategy Optimizer...")
+    
+    # ASCII Art Banner
+    banner = """
++================================================================================+
+| .d8888b.  d8b 888                           888                    d8b         |
+|d88P  Y88b Y8P 888                           888                    Y8P         |
+|Y88b.          888                           888                                |
+| "Y888b.   888 888 888  888  .d88b.  888d888 888888 888d888 8888b.  888 88888b. |
+|    "Y88b. 888 888 888  888 d8P  Y8b 888P"   888    888P"      "88b 888 888 "88b|
+|      "888 888 888 Y88  88P 88888888 888     888    888    .d888888 888 888  888|
+|Y88b  d88P 888 888  Y8bd8P  Y8b.     888     Y88b.  888    888  888 888 888  888|
+| "Y8888P"  888 888   Y88P    "Y8888  888      "Y888 888    "Y888888 888 888  888|
++================================================================================+
+"""
+    print(banner)
+
+    logging.info("Starting the Silvertrain System...")
     logging.info(f"Selected trading mode: {args.mode.upper()}")
 
     # 2. Initialize all components with correct dependencies
@@ -355,10 +371,10 @@ def main():
         logging.critical(f"Fatal error: {str(e)}")
         raise
     except KeyboardInterrupt:
-        logging.info("\nShutting down Strategy Optimizer (user interrupted)...")
+        logging.info("\nShutting down Silvertrain System (user interrupted)...")
     finally:
         logging.info("Cleaning up resources...")
-        logging.info("Strategy Optimizer has been shut down.")
+        logging.info("Silvertrain System has been shut down.")
 
 
 if __name__ == "__main__":

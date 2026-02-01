@@ -2,15 +2,29 @@
 # see: https://firebase.google.com/docs/studio/customize-workspace
 { pkgs, ... }: {
   # Which nixpkgs channel to use.
-  channel = "stable-24.05"; # or "unstable"
+  channel = "unstable"; # or "unstable"
 
   # Use https://search.nixos.org/packages to find packages
   packages = [
-    # pkgs.go
-    # pkgs.python311
-    # pkgs.python311Packages.pip
-    # pkgs.nodejs_20
-    # pkgs.nodePackages.nodemon
+    pkgs.python311
+    pkgs.python311Packages.pip
+    (pkgs.python311.withPackages (ps: [
+      ps.pydantic
+      ps.pyarrow
+      ps.sqlalchemy
+      # ps.ccxt # Temporarily removed due to build issues
+      ps.pyyaml
+      ps.numpy
+      ps.pandas
+      ps.scipy
+      ps.requests
+      ps.python-dotenv
+      ps.fastapi
+      ps.uvicorn
+      ps.prometheus-client
+      ps.boto3
+      ps.openai
+    ]))
   ];
 
   # Sets environment variables in the workspace
