@@ -2,8 +2,8 @@
 from datetime import datetime
 
 import pytest
-from src.governance.incident_tracker import IncidentTracker
-from src.storage.state_manager import StateManager
+from governance.incident_tracker import IncidentTracker
+from storage.state_manager import StateManager
 
 
 @pytest.fixture

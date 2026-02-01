@@ -1,8 +1,8 @@
 # tests/test_governance/test_emergency_manager.py
 import pytest
-from src.governance.approval_workflow import ApprovalWorkflow  # For mocking
-from src.governance.emergency_manager import EmergencyManager
-from src.governance.incident_tracker import IncidentTracker  # For mocking
+from governance.approval_workflow import ApprovalWorkflow  # For mocking
+from governance.emergency_manager import EmergencyManager
+from governance.incident_tracker import IncidentTracker  # For mocking
 
 
 @pytest.fixture

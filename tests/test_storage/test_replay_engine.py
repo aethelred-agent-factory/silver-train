@@ -2,15 +2,15 @@
 from datetime import datetime, timedelta, timezone
 
 import pytest
-from src.data_bus.schemas import (
+from data_bus.schemas import (
     AuditAction,
     AuditVerdict,
     OptimizerProposal,
     TieredFinding,
 )
-from src.optimizer.strategy_optimizer import StrategyOptimizer
-from src.storage.artifact_manager import ArtifactManager
-from src.storage.replay_engine import ReplayEngine
+from optimizer.strategy_optimizer import StrategyOptimizer
+from storage.artifact_manager import ArtifactManager
+from storage.replay_engine import ReplayEngine
 
 
 @pytest.fixture

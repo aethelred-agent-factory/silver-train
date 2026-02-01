@@ -5,9 +5,8 @@ from pathlib import Path
 
 import ccxt
 import pandas as pd
-import pyarrow as pa
-import pyarrow.parquet as pq
 from data_bus.schemas import Candle
+from storage.interface import StorageInterface
 
 
 class MarketDataBus:
@@ -15,10 +14,9 @@ class MarketDataBus:
     Canonical, immutable OHLCV storage.
     """
 
-    def __init__(self, config):
+    def __init__(self, config, storage: StorageInterface):
         self.config = config
-        self.data_path = Path(config["system_config"]["paths"]["market_data"])
-        self.data_path.mkdir(parents=True, exist_ok=True)
+        self.storage = storage
         self.exchange_name = config["system_config"]["data_sources"]["default_exchange"]
 
         # Initialize CCXT exchange
@@ -63,18 +61,9 @@ class MarketDataBus:
             all_candles, columns=["timestamp", "open", "high", "low", "close", "volume"]
         )
         df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms", utc=True)
-        df["date"] = df["timestamp"].dt.date
+        df["symbol"] = symbol
 
-        # Save to Parquet file, partitioned by date
-        table = pa.Table.from_pandas(df)
-        safe_symbol = symbol.replace("/", "_")
-        pq.write_to_dataset(
-            table,
-            root_path=self.data_path / safe_symbol,
-            partition_cols=["date"],
-            basename_template=f"{safe_symbol}-{{i}}.parquet",
-            existing_data_behavior="overwrite_or_ignore",
-        )
+        self.storage.save_market_data(symbol, df)
         logging.info(f"Successfully ingested {len(df)} candles for {symbol}")
 
     def get_candles(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
@@ -83,50 +72,13 @@ class MarketDataBus:
         """
         logging.info(f"Retrieving candles for {symbol} from {start_date} to {end_date}")
 
-        safe_symbol = symbol.replace("/", "_")
-        dataset_path = self.data_path / safe_symbol
-        if not dataset_path.exists():
-            logging.warning(f"No data found for symbol: {symbol}")
+        records = self.storage.query_market_data(symbol, start_date, end_date)
+        if not records:
             return pd.DataFrame()
 
-        filters = []
-        if start_date:
-            start = pd.to_datetime(start_date, utc=True)
-            filters.append(("date", ">=", str(start.date())))
-        else:
-            start = None
-
-        if end_date:
-            end = pd.to_datetime(end_date, utc=True)
-            filters.append(("date", "<=", str(end.date())))
-        else:
-            end = None
-
-        try:
-            if filters:
-                dataset = pq.ParquetDataset(dataset_path, filters=filters)
-            else:
-                dataset = pq.ParquetDataset(dataset_path)
-        except Exception as e:
-            logging.error(
-                f"Error creating ParquetDataset for {symbol} with filters {filters}: {e}"
-            )
-            # Fallback to reading the whole dataset and filtering in pandas
-            dataset = pq.ParquetDataset(dataset_path)
-
-        table = dataset.read(
-            columns=["timestamp", "open", "high", "low", "close", "volume"]
-        )
-        df = table.to_pandas()
-
-        # Ensure timestamps are timezone-aware UTC for safe comparisons
-        if not isinstance(df["timestamp"].dtype, pd.DatetimeTZDtype):
-            df["timestamp"] = pd.to_datetime(df["timestamp"]).dt.tz_localize("UTC")
-
-        if start:
-            df = df[df["timestamp"] >= start]
-        if end:
-            df = df[df["timestamp"] <= end]
+        df = pd.DataFrame(records)
+        if "timestamp" in df.columns:
+            df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
 
         return df
 

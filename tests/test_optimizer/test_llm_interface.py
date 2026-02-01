@@ -1,6 +1,6 @@
 # tests/test_optimizer/test_llm_interface.py
 import pytest
-from src.optimizer.llm_interface import LLMInterface
+from optimizer.llm_interface import LLMInterface
 
 
 @pytest.fixture

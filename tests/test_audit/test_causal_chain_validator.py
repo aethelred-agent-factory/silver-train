@@ -2,23 +2,19 @@
 from datetime import datetime, timedelta
 
 import pytest
-from strategy_optimizer.audit.causal_chain_validator import CausalChainValidator
-from strategy_optimizer.data_bus.schemas import CausalChainRef, OptimizerProposal
-from strategy_optimizer.storage.artifact_manager import ArtifactManager  # For mocking
+from audit.causal_chain_validator import CausalChainValidator
+from data_bus.schemas import CausalChainRef, OptimizerProposal
+from storage.interface import StorageInterface
 
 
 @pytest.fixture
 def mock_artifact_manager(mocker):
-    mock = mocker.Mock(spec=ArtifactManager)
-    mock.retrieve_artifact = mocker.Mock(
-        side_effect=lambda artifact_id: type(
-            "obj", (object,), {"timestamp": datetime.utcnow() - timedelta(hours=1)}
-        )()
-        if not "future" in artifact_id
-        else type(
-            "obj", (object,), {"timestamp": datetime.utcnow() + timedelta(hours=1)}
-        )()
-    )
+    mock = mocker.Mock(spec=StorageInterface)
+    mock.load_artifact.side_effect = lambda artifact_id: {
+        "timestamp": (datetime.now() - timedelta(hours=1)).isoformat()
+    } if not "future" in artifact_id else {
+        "timestamp": (datetime.now() + timedelta(hours=1)).isoformat()
+    }
     return mock
 
 
@@ -28,7 +24,7 @@ def causal_chain_validator(test_config, mock_artifact_manager):
 
 
 def test_validate_proposal_valid(causal_chain_validator, mock_artifact_manager):
-    now = datetime.utcnow()
+    now = datetime.now()
     proposal = OptimizerProposal(
         proposal_version=1,
         source="test",
@@ -40,17 +36,17 @@ def test_validate_proposal_valid(causal_chain_validator, mock_artifact_manager):
         ],
         timestamp=now,
     )
-    # Mock retrieve_artifact to always return past timestamps for this test
-    mock_artifact_manager.retrieve_artifact.side_effect = lambda artifact_id: type(
-        "obj", (object,), {"timestamp": now - timedelta(hours=1)}
-    )()
+    # Mock load_artifact to always return past timestamps for this test
+    mock_artifact_manager.load_artifact.side_effect = lambda artifact_id: {
+        "timestamp": (now - timedelta(hours=1)).isoformat()
+    }
 
     assert causal_chain_validator.validate_proposal(proposal) is True
     # mock_artifact_manager.retrieve_artifact.assert_called() # Should have been called twice
 
 
 def test_validate_proposal_future_artifact(causal_chain_validator):
-    now = datetime.utcnow()
+    now = datetime.now()
     proposal = OptimizerProposal(
         proposal_version=1,
         source="test",
@@ -72,7 +68,7 @@ def test_validate_proposal_future_artifact(causal_chain_validator):
 def test_validate_proposal_missing_artifact(
     causal_chain_validator, mock_artifact_manager
 ):
-    now = datetime.utcnow()
+    now = datetime.now()
     proposal = OptimizerProposal(
         proposal_version=1,
         source="test",
@@ -81,14 +77,9 @@ def test_validate_proposal_missing_artifact(
         causal_chain_refs=[CausalChainRef(type="metric", id="non_existent_id")],
         timestamp=now,
     )
-    mock_artifact_manager.retrieve_artifact.return_value = (
+    mock_artifact_manager.load_artifact.side_effect = None
+    mock_artifact_manager.load_artifact.return_value = (
         None  # Simulate missing artifact
     )
 
-    # This test will currently pass because the placeholder in CausalChainValidator
-    # directly checks for "future" in the ID.
-    # When ArtifactManager.retrieve_artifact is fully implemented and returns None,
-    # this test should correctly return False.
-    assert (
-        causal_chain_validator.validate_proposal(proposal) is True
-    )  # This will be False later
+    assert causal_chain_validator.validate_proposal(proposal) is False

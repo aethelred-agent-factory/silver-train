@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-from strategy_optimizer.backtesting.performance_metrics import PerformanceMetrics
+from backtesting.performance_metrics import PerformanceMetrics
 
 
 @pytest.fixture

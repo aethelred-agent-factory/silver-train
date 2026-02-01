@@ -1,7 +1,7 @@
 # tests/test_governance/test_restriction_enforcer.py
 import pytest
-from src.data_bus.schemas import AuditAction, AuditVerdict
-from src.governance.restriction_enforcer import RestrictionEnforcer
+from data_bus.schemas import AuditAction, AuditVerdict
+from governance.restriction_enforcer import RestrictionEnforcer
 
 
 @pytest.fixture

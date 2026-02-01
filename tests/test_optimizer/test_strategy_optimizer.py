@@ -2,10 +2,10 @@
 from datetime import datetime
 
 import pytest
-from strategy_optimizer.data_bus.event_bus import EventBus
-from strategy_optimizer.data_bus.schemas import OptimizerProposal
-from strategy_optimizer.optimizer.strategy_optimizer import StrategyOptimizer
-from strategy_optimizer.processors.regime_classifier import RegimeClassifier
+from data_bus.event_bus import EventBus
+from data_bus.schemas import OptimizerProposal
+from optimizer.strategy_optimizer import StrategyOptimizer
+from processors.regime_classifier import RegimeClassifier
 
 
 @pytest.fixture

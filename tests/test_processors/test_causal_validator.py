@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 import pytest
-from src.processors.causal_validator import CausalValidator
+from processors.causal_validator import CausalValidator
 
 
 @pytest.fixture

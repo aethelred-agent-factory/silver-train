@@ -2,7 +2,7 @@
 from datetime import datetime, timezone
 
 import pytest
-from strategy_optimizer.data_bus.schemas import (
+from data_bus.schemas import (
     AuditAction,
     AuditVerdict,
     Candle,

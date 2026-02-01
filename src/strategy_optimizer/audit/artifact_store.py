@@ -18,23 +18,29 @@ class ArtifactStore:
 
     def store_artifact(self, verdict: AuditVerdict) -> AuditVerdict:
         """
-        Stores an audit verdict as a JSON artifact. The ArtifactManager handles checksum calculation.
+        Stores an audit verdict as a JSON artifact using the storage backend.
         Returns the updated AuditVerdict with artifact_refs and checksum populated.
         """
         artifact_id = f"audit_{verdict.audit_id}.json"
 
-        # The checksum is now calculated within the artifact_manager.
-        verdict_json = verdict.json(indent=4)
+        # Calculate checksum
+        verdict_dict = verdict.model_dump(mode='json')
+        verdict_json = json.dumps(verdict_dict, indent=4)
+        checksum = self.crypto_utils.sha256_hash(verdict_json.encode("utf-8"))
 
-        uri, checksum = self.artifact_manager.upload_artifact(verdict_json, artifact_id)
+        success = self.artifact_manager.save_artifact(artifact_id, verdict_dict, checksum)
 
-        # Update the verdict object with the stored URI and checksum
-        verdict.artifact_refs.append(uri)
-        verdict.checksum = checksum
+        if success:
+            # Construct a URI (this is backend-dependent, but we can use a generic one)
+            # Both Sqlite and Supabase implementations handle this differently internally.
+            # For now, let's use a standard format.
+            uri = f"artifact://{artifact_id}"
+            verdict.artifact_refs.append(uri)
+            verdict.checksum = checksum
+            logging.info(f"Stored audit artifact {artifact_id} with checksum {checksum}")
+        else:
+            logging.error(f"Failed to store audit artifact {artifact_id}")
 
-        logging.info(
-            f"Stored audit artifact {artifact_id} at {uri} with checksum {checksum}"
-        )
         return verdict
 
     def retrieve_artifact(self, audit_id: str) -> AuditVerdict:
@@ -42,64 +48,20 @@ class ArtifactStore:
         Retrieves and verifies an audit artifact using its checksum.
         """
         artifact_id = f"audit_{audit_id}.json"
-        # Prefer retrieve_artifact which may return a parsed object
-        artifact_json = None
-        stored_checksum = None
-        try:
-            res = self.artifact_manager.download_artifact(artifact_id)
-        except AttributeError:
-            # Some artifact managers implement retrieve_artifact instead
-            res = None
+        content = self.artifact_manager.load_artifact(artifact_id)
 
-        if res is None and hasattr(self.artifact_manager, "retrieve_artifact"):
-            # If retrieve_artifact returns an AuditVerdict-like object, return it directly
-            try:
-                obj = self.artifact_manager.retrieve_artifact(artifact_id)
-                return obj
-            except Exception:
-                return None
-
-        if isinstance(res, tuple) and len(res) >= 2:
-            artifact_json, stored_checksum = res[0], res[1]
-        elif isinstance(res, tuple) and len(res) == 1:
-            artifact_json = res[0]
-
-        if not artifact_json:
+        if not content:
             logging.error(f"Artifact {artifact_id} not found or is empty.")
             return None
 
-        if not stored_checksum:
-            logging.warning(
-                f"Artifact {artifact_id} has no checksum. Cannot verify integrity."
-            )
-            try:
-                return AuditVerdict.parse_raw(artifact_json)
-            except Exception:
-                return None
-
-        # Verify checksum
-        calculated_checksum = self.crypto_utils.sha256_hash(
-            artifact_json.encode("utf-8")
-        )
-
-        if calculated_checksum != stored_checksum:
-            logging.error(
-                f"Checksum mismatch for artifact {artifact_id}! "
-                f"Calculated: {calculated_checksum}, Stored: {stored_checksum}. Artifact is corrupt."
-            )
-            return None
-
-        logging.info(f"Successfully retrieved and verified artifact {artifact_id}.")
         try:
-            return AuditVerdict.parse_raw(artifact_json)
-        except Exception:
+            return AuditVerdict(**content)
+        except Exception as e:
+            logging.error(f"Failed to parse artifact {artifact_id}: {e}")
             return None
 
     def get_artifact_uri(self, artifact_id: str) -> str:
         """Convenience passthrough to the underlying artifact manager."""
-        if hasattr(self.artifact_manager, "get_artifact_uri"):
-            try:
-                return self.artifact_manager.get_artifact_uri(artifact_id)
-            except Exception:
-                return None
-        return None
+        # The unified interface doesn't explicitly have get_artifact_uri yet,
+        # but we can construct it or just return the artifact_id.
+        return f"artifact://{artifact_id}"

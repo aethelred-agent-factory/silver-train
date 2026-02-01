@@ -1,13 +1,13 @@
 # tests/test_execution/test_execution_engine.py
 import pytest
-from src.data_bus.schemas import (
+from data_bus.schemas import (
     AuditAction,
     AuditVerdict,
     OptimizerProposal,
     TieredFinding,
 )
-from src.execution.execution_engine import ExecutionEngine
-from src.execution.order_manager import OrderManager  # For mocking
+from execution.execution_engine import ExecutionEngine
+from execution.order_manager import OrderManager  # For mocking
 
 
 @pytest.fixture

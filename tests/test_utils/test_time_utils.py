@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta, timezone
 
 import pytest
-from src.utils.time_utils import TimeUtils
+from utils.time_utils import TimeUtils
 
 
 @pytest.fixture

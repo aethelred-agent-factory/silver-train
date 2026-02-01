@@ -37,16 +37,15 @@ class CausalChainValidator:
 
         for ref in proposal.causal_chain_refs:
             artifact_id = ref.id
-            artifact_json, _ = self.artifact_manager.download_artifact(artifact_id)
+            data = self.artifact_manager.load_artifact(artifact_id)
 
-            if not artifact_json:
+            if not data:
                 logging.error(
                     f"Causal chain validation failed: Artifact {artifact_id} not found."
                 )
                 return False
 
             try:
-                data = json.loads(artifact_json)
                 artifact_timestamp = datetime.fromisoformat(data["timestamp"])
 
                 if artifact_timestamp >= proposal.timestamp:

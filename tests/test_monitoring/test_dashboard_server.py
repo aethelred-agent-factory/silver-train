@@ -1,10 +1,10 @@
 
 import pytest
 from httpx import AsyncClient
-from strategy_optimizer.governance.incident_tracker import IncidentTracker
-from strategy_optimizer.monitoring.dashboard_server import DashboardServer
-from strategy_optimizer.storage.artifact_manager import ArtifactManager
-from strategy_optimizer.storage.state_manager import StateManager
+from governance.incident_tracker import IncidentTracker
+from monitoring.dashboard_server import DashboardServer
+from storage.artifact_manager import ArtifactManager
+from storage.state_manager import StateManager
 
 
 @pytest.fixture(scope="function")

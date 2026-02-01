@@ -1,6 +1,6 @@
 # tests/test_backtesting/test_position_manager.py
 import pytest
-from strategy_optimizer.backtesting.position_manager import PositionManager
+from backtesting.position_manager import PositionManager
 
 
 @pytest.fixture

@@ -1,9 +1,9 @@
 
 import pytest
-from strategy_optimizer.execution.exchange_adapter import ExchangeAdapter
-from strategy_optimizer.monitoring.alerting import Alerting
-from strategy_optimizer.monitoring.health_checker import HealthChecker
-from strategy_optimizer.storage.state_manager import StateManager
+from execution.exchange_adapter import ExchangeAdapter
+from monitoring.alerting import Alerting
+from monitoring.health_checker import HealthChecker
+from storage.state_manager import StateManager
 
 
 @pytest.fixture

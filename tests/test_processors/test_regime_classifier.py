@@ -3,8 +3,8 @@ from datetime import datetime
 
 import pandas as pd
 import pytest
-from strategy_optimizer.processors.indicator_engine import IndicatorEngine  # Needs to be mocked
-from strategy_optimizer.processors.regime_classifier import RegimeClassifier
+from processors.indicator_engine import IndicatorEngine  # Needs to be mocked
+from processors.regime_classifier import RegimeClassifier
 
 
 @pytest.fixture

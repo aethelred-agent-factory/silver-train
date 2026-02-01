@@ -1,9 +1,9 @@
 # tests/test_data_bus/test_market_data_bus.py
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 import pytest
-from strategy_optimizer.data_bus.market_data_bus import MarketDataBus
+from data_bus.market_data_bus import MarketDataBus
 
 
 class MockExchange:
@@ -14,7 +14,7 @@ class MockExchange:
         pass
 
     def parse8601(self, dt_string):
-        return pd.to_datetime(dt_string).timestamp() * 1000
+        return pd.to_datetime(dt_string, utc=True).timestamp() * 1000
 
     def parse_timeframe(self, timeframe):
         return 3600  # 1 hour in seconds
@@ -24,19 +24,21 @@ class MockExchange:
         if since >= self.parse8601("2023-01-02T00:00:00Z"):
             return []  # No more data
 
-        start_dt = datetime.fromtimestamp(since / 1000)
+        start_dt = datetime.fromtimestamp(since / 1000, tz=timezone.utc)
         candles = []
         for i in range(10):  # Return 10 candles
-            timestamp = (start_dt + timedelta(hours=i)).timestamp() * 1000
-            candles.append([timestamp, 100 + i, 105 + i, 95 + i, 102 + i, 1000 + i])
+            ts_ms = (start_dt + timedelta(hours=i)).timestamp() * 1000
+            if ts_ms >= self.parse8601("2023-01-02T00:00:00Z"):
+                break
+            candles.append([ts_ms, 100 + i, 105 + i, 95 + i, 102 + i, 1000 + i])
         return candles
 
 
 @pytest.fixture
-def mock_market_data_bus(test_config, temp_data_path, monkeypatch):
+def mock_market_data_bus(test_config, temp_data_path, monkeypatch, in_memory_state_manager):
     test_config["system_config"]["paths"]["market_data"] = str(temp_data_path)
-    monkeypatch.setattr("strategy_optimizer.data_bus.market_data_bus.ccxt.binance", MockExchange)
-    mdb = MarketDataBus(test_config)
+    monkeypatch.setattr("data_bus.market_data_bus.ccxt.binance", MockExchange)
+    mdb = MarketDataBus(test_config, in_memory_state_manager)
     return mdb
 
 

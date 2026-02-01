@@ -2,8 +2,8 @@
 import random
 
 import pytest
-from strategy_optimizer.backtesting.backtest_engine import BacktestEngine  # Needs to be mocked
-from strategy_optimizer.optimizer.fallback_mode import FallbackMode
+from backtesting.backtest_engine import BacktestEngine  # Needs to be mocked
+from optimizer.fallback_mode import FallbackMode
 
 
 @pytest.fixture

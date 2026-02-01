@@ -2,7 +2,7 @@ import json
 import logging
 import os
 import sqlite3
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 import pandas as pd
 
 from .interface import StorageInterface
@@ -17,35 +17,53 @@ class SqliteStorage(StorageInterface):
         self.db_path = db_path
         self.artifacts_path = artifacts_path
         self.market_data_path = market_data_path
+        self._memory_conn = None
+
+        # Ensure directories exist
+        if self.db_path != ":memory:":
+            os.makedirs(os.path.dirname(os.path.abspath(self.db_path)), exist_ok=True)
+        else:
+            # For in-memory database, we must keep one connection open
+            self._memory_conn = sqlite3.connect(self.db_path, check_same_thread=False)
+
         os.makedirs(self.artifacts_path, exist_ok=True)
+        os.makedirs(self.market_data_path, exist_ok=True)
+
         self._initialize_db()
         logging.info(f"Initialized SqliteStorage with DB: {self.db_path}")
 
     def _get_connection(self):
+        if self._memory_conn:
+            return self._memory_conn
         return sqlite3.connect(self.db_path)
 
     def _initialize_db(self):
-        with self._get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                """
-                CREATE TABLE IF NOT EXISTS optimizer_state (
-                    key TEXT PRIMARY KEY,
-                    value TEXT
-                );
-                """
-            )
-            conn.commit()
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS optimizer_state (
+                key TEXT PRIMARY KEY,
+                value TEXT
+            );
+            """
+        )
+        conn.commit()
+        # If not in-memory, we can close it (it's called in __init__)
+        if not self._memory_conn:
+            conn.close()
 
     def save_state(self, key: str, value: Dict) -> bool:
         try:
-            with self._get_connection() as conn:
-                cursor = conn.cursor()
-                cursor.execute(
-                    "REPLACE INTO optimizer_state (key, value) VALUES (?, ?);",
-                    (key, json.dumps(value)),
-                )
-                conn.commit()
+            conn = self._get_connection()
+            cursor = conn.cursor()
+            cursor.execute(
+                "REPLACE INTO optimizer_state (key, value) VALUES (?, ?);",
+                (key, json.dumps(value)),
+            )
+            conn.commit()
+            if not self._memory_conn:
+                conn.close()
             logging.debug(f"State saved: {key}")
             return True
         except Exception as e:
@@ -54,10 +72,13 @@ class SqliteStorage(StorageInterface):
 
     def load_state(self, key: str) -> Optional[Dict]:
         try:
-            with self._get_connection() as conn:
-                cursor = conn.cursor()
-                cursor.execute("SELECT value FROM optimizer_state WHERE key = ?;", (key,))
-                result = cursor.fetchone()
+            conn = self._get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT value FROM optimizer_state WHERE key = ?;", (key,))
+            result = cursor.fetchone()
+            if not self._memory_conn:
+                conn.close()
+
             if result:
                 logging.debug(f"State loaded for {key}")
                 return json.loads(result[0])
@@ -68,10 +89,12 @@ class SqliteStorage(StorageInterface):
 
     def delete_state(self, key: str) -> bool:
         try:
-            with self._get_connection() as conn:
-                cursor = conn.cursor()
-                cursor.execute("DELETE FROM optimizer_state WHERE key = ?;", (key,))
-                conn.commit()
+            conn = self._get_connection()
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM optimizer_state WHERE key = ?;", (key,))
+            conn.commit()
+            if not self._memory_conn:
+                conn.close()
             logging.debug(f"State deleted for {key}")
             return True
         except Exception as e:
@@ -104,29 +127,75 @@ class SqliteStorage(StorageInterface):
             logging.error(f"Error loading artifact: {e}")
             return None
 
+    def execute_query(self, query: str, params: tuple = (), fetch: Optional[str] = None) -> Any:
+        """
+        Executes a given SQL query and returns the results.
+        """
+        try:
+            conn = self._get_connection()
+            cursor = conn.cursor()
+            cursor.execute(query, params)
+            result = None
+            if fetch == "one":
+                result = cursor.fetchone()
+            elif fetch == "all":
+                result = cursor.fetchall()
+            else:
+                conn.commit()
+
+            if not self._memory_conn:
+                conn.close()
+            return result
+        except sqlite3.Error as e:
+            logging.error(f"Database error: {e}")
+            raise
+
+    def save_market_data(self, symbol: str, df: pd.DataFrame) -> bool:
+        try:
+            safe_symbol = symbol.replace("/", "_")
+            os.makedirs(self.market_data_path, exist_ok=True)
+            filepath = os.path.join(self.market_data_path, f"{safe_symbol}.parquet")
+
+            if os.path.exists(filepath):
+                try:
+                    existing_df = pd.read_parquet(filepath)
+                    df = pd.concat([existing_df, df]).drop_duplicates().reset_index(drop=True)
+                except Exception:
+                    pass # Just overwrite if read fails
+
+            df.to_parquet(filepath, index=False)
+            return True
+        except Exception as e:
+            logging.error(f"Error saving market data: {e}")
+            return False
+
     def query_market_data(self, symbol: str, start: str, end: str) -> List[Dict]:
         try:
-            # Assuming market data is stored in a single parquet file for simplicity
-            # A more robust implementation would handle multiple files and formats.
-            files = [f for f in os.listdir(self.market_data_path) if f.endswith('.parquet')]
-            if not files:
-                logging.error("No market data files found.")
+            safe_symbol = symbol.replace("/", "_")
+            filepath = os.path.join(self.market_data_path, f"{safe_symbol}.parquet")
+
+            if not os.path.exists(filepath):
                 return []
 
-            # Load the first parquet file found
-            file_path = os.path.join(self.market_data_path, files[0])
-            df = pd.read_parquet(file_path)
+            df = pd.read_parquet(filepath)
+
+            if df.empty:
+                return []
 
             # Filter by symbol and date range
-            df['time'] = pd.to_datetime(df['time'])
-            mask = (
-                (df["symbol"] == symbol) &
-                (df["time"] >= pd.to_datetime(start)) &
-                (dest["time"] <= pd.to_datetime(end))
-            )
-            filtered_df = df.loc[mask]
+            if "symbol" in df.columns:
+                df = df[df["symbol"] == symbol]
 
-            return filtered_df.to_dict("records")
+            if "timestamp" in df.columns:
+                df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
+                if start:
+                    start_dt = pd.to_datetime(start, utc=True)
+                    df = df[df["timestamp"] >= start_dt]
+                if end:
+                    end_dt = pd.to_datetime(end, utc=True)
+                    df = df[df["timestamp"] <= end_dt]
+
+            return df.to_dict("records")
         except Exception as e:
             logging.error(f"Error querying market data: {e}")
             return []

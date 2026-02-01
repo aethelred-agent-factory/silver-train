@@ -3,8 +3,8 @@ import json
 import os
 
 import pytest
-from src.storage.artifact_manager import ArtifactManager
-from src.utils.crypto_utils import CryptoUtils
+from storage.artifact_manager import ArtifactManager
+from utils.crypto_utils import CryptoUtils
 
 
 @pytest.fixture

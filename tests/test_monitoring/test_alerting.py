@@ -2,7 +2,7 @@
 import os
 
 import pytest
-from strategy_optimizer.monitoring.alerting import Alerting
+from monitoring.alerting import Alerting
 
 
 @pytest.fixture

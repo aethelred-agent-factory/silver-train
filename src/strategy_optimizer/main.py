@@ -48,7 +48,6 @@ from optimizer.strategy_optimizer import StrategyOptimizer
 from processors.data_bootstrap_validator import DataBootstrapValidator
 from processors.indicator_engine import IndicatorEngine
 from processors.regime_classifier import RegimeClassifier
-from storage.artifact_manager import ArtifactManager
 from storage.replay_engine import ReplayEngine
 from storage.factory import get_storage_backend
 from utils.crypto_utils import CryptoUtils
@@ -169,7 +168,7 @@ def main():
         adapter = ExchangeAdapter(config)
         logging.info("Initialized Live Exchange Adapter.")
 
-    market_data_bus = MarketDataBus(config)
+    market_data_bus = MarketDataBus(config, storage_backend)
 
     # Processors
     indicator_engine = IndicatorEngine(config, market_data_bus)
@@ -215,12 +214,11 @@ def main():
     )
 
     # Audit Layer
-    artifact_manager = ArtifactManager(config, crypto_utils)
     t1_checks = T1Checks(config)
     t2_checks = T2Checks(config)
     t3_checks = T3Checks(config)
-    audit_causal_validator = AuditCausalChainValidator(config, artifact_manager)
-    artifact_store = ArtifactStore(config, artifact_manager, crypto_utils)
+    audit_causal_validator = AuditCausalChainValidator(config, storage_backend)
+    artifact_store = ArtifactStore(config, storage_backend, crypto_utils)
     audit_layer = AuditLayer(
         config,
         event_bus,
@@ -234,7 +232,7 @@ def main():
     # Monitoring
     metrics_collector = MetricsCollector(storage_backend, performance_metrics)
     dashboard_server = DashboardServer(
-        config, storage_backend, artifact_manager, incident_tracker, metrics_collector
+        config, storage_backend, storage_backend, incident_tracker, metrics_collector
     )
 
     # Execution & Governance
@@ -333,8 +331,12 @@ def main():
                 proposal = strategy_optimizer.publish_proposal(current_params, "HOLD")
 
                 # Store the proposal artifact so the next audit can find it
-                artifact_manager.upload_artifact(
-                    artifact_id=proposal.proposal_id, data=proposal.json()
+                proposal_dict = proposal.model_dump(mode='json')
+                proposal_json = json.dumps(proposal_dict, indent=4)
+                checksum = crypto_utils.sha256_hash(proposal_json.encode("utf-8"))
+
+                storage_backend.save_artifact(
+                    artifact_id=proposal.proposal_id, content=proposal_dict, checksum=checksum
                 )
 
                 # Wait for the audit to complete

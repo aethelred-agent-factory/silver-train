@@ -3,9 +3,9 @@ from datetime import datetime
 
 import pandas as pd
 import pytest
-from strategy_optimizer.optimizer.signal_generator import SignalGenerator
-from strategy_optimizer.processors.indicator_engine import IndicatorEngine
-from strategy_optimizer.processors.regime_classifier import RegimeClassifier
+from optimizer.signal_generator import SignalGenerator
+from processors.indicator_engine import IndicatorEngine
+from processors.regime_classifier import RegimeClassifier
 
 
 @pytest.fixture

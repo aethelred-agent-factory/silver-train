@@ -25,7 +25,7 @@ class EventBus:
     def publish_proposal(self, proposal: OptimizerProposal):
         """Publishes an optimizer proposal to the persistent queue."""
         proposal_key = f"proposal:{proposal.proposal_id}"
-        self.storage.save_state(proposal_key, proposal.dict())
+        self.storage.save_state(proposal_key, proposal.model_dump(mode='json'))
 
         pending_proposals = self.storage.load_state(PROPOSALS_PENDING_KEY) or []
         pending_proposals.append(proposal.proposal_id)
@@ -67,7 +67,7 @@ class EventBus:
     def publish_verdict(self, verdict: AuditVerdict):
         """Publishes an audit verdict."""
         verdict_key = f"{VERDICTS_KEY_PREFIX}{verdict.audit_id}"
-        self.storage.save_state(verdict_key, verdict.dict())
+        self.storage.save_state(verdict_key, verdict.model_dump(mode='json'))
 
         # Create an index for proposal_id -> verdict_id
         proposal_verdict_key = f"{VERDICTS_KEY_PREFIX}for_proposal:{verdict.proposal_id}"

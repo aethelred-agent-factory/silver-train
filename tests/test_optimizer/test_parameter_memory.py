@@ -1,7 +1,7 @@
 
 import pytest
-from strategy_optimizer.optimizer.parameter_memory import ParameterMemory
-from strategy_optimizer.storage.state_manager import StateManager
+from optimizer.parameter_memory import ParameterMemory
+from storage.state_manager import StateManager
 
 
 @pytest.fixture
